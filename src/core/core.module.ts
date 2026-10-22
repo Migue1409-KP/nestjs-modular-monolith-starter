@@ -5,6 +5,7 @@ import { NotificationModule } from './notification/notification.module';
 import { HttpModule } from './http/http.module';
 import { ParametersModule } from './parameters/parameters.module';
 import { StorageModule } from './storage/storage.module';
+import { HealthModule } from './health/health.module';
 
 @Global()
 @Module({
@@ -15,6 +16,7 @@ import { StorageModule } from './storage/storage.module';
     HttpModule,
     ParametersModule,
     StorageModule,
+    HealthModule,
   ],
   exports: [DatabaseModule, NotificationModule, HttpModule, ParametersModule, StorageModule],
 })
