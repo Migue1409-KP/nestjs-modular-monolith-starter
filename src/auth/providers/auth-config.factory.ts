@@ -14,6 +14,7 @@ import { ConfigService } from '@nestjs/config';
 import { NotificationService } from '@/core/notification/notification.service';
 import { auth } from '../better-auth.cli';
 import { passkey } from 'better-auth/plugins/passkey';
+import { parseFrontendUrls } from '@/shared/utils/frontend-url.util';
 import * as crypto from 'crypto';
 
 @Injectable()
@@ -26,12 +27,9 @@ export class AuthConfigFactory {
   ) {}
 
   create() {
-    const frontendUrl = this.configService.get<string>('FRONTEND_URL') || '';
-    const isProduction = this.configService.get<string>('NODE_ENV') === 'production';
-
-    const trustedOrigins = isProduction
-      ? [frontendUrl]
-      : frontendUrl.split(',').map((url) => url.trim());
+    const trustedOrigins = parseFrontendUrls(this.configService.get<string>('FRONTEND_URL'));
+    const crossSiteCookies = this.configService.get<string>('COOKIE_CROSS_SITE') === 'true';
+    const cookieDomain = this.configService.get<string>('DOMAIN') || undefined;
 
     return betterAuth({
       url:
@@ -99,6 +97,25 @@ export class AuthConfigFactory {
           },
         },
       },
+
+      // Opt-in via COOKIE_CROSS_SITE=true when the frontend lives on another site/subdomain.
+      // SameSite=None requires Secure, so only enable it over HTTPS (or localhost).
+      ...(crossSiteCookies && {
+        advanced: {
+          cookies: {
+            session_token: {
+              attributes: {
+                sameSite: 'none' as const,
+                secure: true,
+              },
+            },
+          },
+          crossSubDomainCookies: {
+            enabled: !!cookieDomain,
+            domain: cookieDomain,
+          },
+        },
+      }),
 
       plugins: [
         openAPI(),

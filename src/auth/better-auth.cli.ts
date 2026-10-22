@@ -3,15 +3,11 @@ import { Pool } from 'pg';
 import * as dotenv from 'dotenv';
 import { emailOTP, lastLoginMethod, magicLink, openAPI } from 'better-auth/plugins';
 import { passkey } from 'better-auth/plugins/passkey';
+import { parseFrontendUrls } from '../shared/utils/frontend-url.util';
 
 // Cargar variables de entorno manualmente
 dotenv.config();
-const frontendUrl = process.env.FRONTEND_URL;
-const isProduction = process.env.NODE_ENV === 'production';
-
-const trustedOrigins = isProduction
-  ? [frontendUrl]
-  : frontendUrl.split(',').map((url) => url.trim());
+const trustedOrigins = parseFrontendUrls(process.env.FRONTEND_URL);
 
 export const auth = betterAuth({
   url: `${process.env.HOST}:${process.env.PORT}` || 'http://localhost:3000',
