@@ -41,7 +41,12 @@ export class ProblemDetailsFilter implements ExceptionFilter {
         type: 'about:blank',
         title: 'Internal Server Error',
         status,
-        detail: (exception as any)?.message || 'Unexpected error',
+        // Never leak raw driver/internal error messages (e.g. Postgres syntax errors) to clients in production.
+        // The real message is always logged below regardless of environment.
+        detail:
+          process.env.NODE_ENV === 'production'
+            ? 'Unexpected error'
+            : (exception as any)?.message || 'Unexpected error',
         instance: request.url,
       };
     }

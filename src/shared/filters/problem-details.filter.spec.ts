@@ -51,4 +51,20 @@ describe('ProblemDetailsFilter', () => {
     expect(jsonArg.error.status).toEqual(500);
     expect(jsonArg.error.detail).toEqual('Something broke');
   });
+
+  it('should not leak internal error messages in production', () => {
+    const previousEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
+    try {
+      const host = buildMockHost('/api/v1/crash', 'POST');
+      filter.catch(new Error('syntax error at or near "SELEC"'), host);
+
+      const responseMock = host.switchToHttp().getResponse() as any;
+      const jsonArg = responseMock.status.mock.results[0].value.json.mock.calls[0][0];
+      expect(jsonArg.error.status).toEqual(500);
+      expect(jsonArg.error.detail).toEqual('Unexpected error');
+    } finally {
+      process.env.NODE_ENV = previousEnv;
+    }
+  });
 });
