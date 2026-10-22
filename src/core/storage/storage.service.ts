@@ -2,7 +2,7 @@ import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
 import * as mime from 'mime-types';
-import dayjs from 'dayjs';
+import * as dayjs from 'dayjs';
 import { IStorageProvider, STORAGE_PROVIDER } from './interfaces/storage-provider.interface';
 import { AssetType, ASSET_TYPE_CONFIG } from './constants/asset-types.constant';
 import { RequestUploadDto } from './dto/request-upload.dto';
