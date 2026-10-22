@@ -140,3 +140,13 @@ better-auth_migrations/
 
 # Claude
 .claude/*.local.json
+# OpenAPI exports (generated at startup outside production)
+openapi.yaml
+openapi.json
+
+# SonarQube
+.scannerwork/
+.sonar/
+
+# Staging env
+.env.staging

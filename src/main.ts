@@ -9,8 +9,10 @@ import { ProblemDetailsFilter } from './shared/filters/problem-details.filter';
 import { RequestIdInterceptor } from './shared/interceptors/request-id.interceptor';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ApiKeyGuard } from './shared/guards/api-key.guard';
-// import * as fs from 'fs';
-// import * as yaml from 'js-yaml';
+import { apiReference } from '@scalar/nestjs-api-reference';
+import { parseFrontendUrls } from './shared/utils/frontend-url.util';
+import * as fs from 'fs';
+import * as yaml from 'js-yaml';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bodyParser: false });
@@ -40,12 +42,7 @@ async function bootstrap() {
   app.useGlobalFilters(new ProblemDetailsFilter());
 
   // CORS
-  const frontendUrl = configService.get<string>('FRONTEND_URL') || '';
-  const isProduction = configService.get<string>('NODE_ENV') === 'production';
-
-  const trustedOrigins = isProduction
-    ? [frontendUrl]
-    : frontendUrl.split(',').map((url) => url.trim());
+  const trustedOrigins = parseFrontendUrls(configService.get<string>('FRONTEND_URL'));
 
   app.enableCors({
     origin: trustedOrigins,
@@ -82,14 +79,37 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
 
-  // Si quieres exportar el OpenAPI a archivos, descomenta lo siguiente:
-  // // Exportar JSON
-  // fs.writeFileSync('./openapi.json', JSON.stringify(document, null, 2));
+  // Serve the OpenAPI spec (JSON/YAML) only outside production.
+  const nonProductionEnvs = ['development', 'staging'];
+  const isNonProduction = nonProductionEnvs.includes(
+    configService.get<string>('NODE_ENV', 'development'),
+  );
 
-  // // Exportar YAML
-  // fs.writeFileSync('./openapi.yaml', yaml.dump(document));
+  if (isNonProduction) {
+    fs.writeFileSync('./openapi.json', JSON.stringify(document, null, 2));
+    fs.writeFileSync('./openapi.yaml', yaml.dump(document));
 
-  SwaggerModule.setup(`${apiPrefix}/docs`, app, document);
+    app.use(`/${apiPrefix}/download/openapi.json`, (_req, res) => {
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', 'attachment; filename="openapi.json"');
+      res.sendFile('openapi.json', { root: process.cwd() });
+    });
+
+    app.use(`/${apiPrefix}/download/openapi.yaml`, (_req, res) => {
+      res.setHeader('Content-Type', 'application/yaml');
+      res.setHeader('Content-Disposition', 'attachment; filename="openapi.yaml"');
+      res.sendFile('openapi.yaml', { root: process.cwd() });
+    });
+  }
+
+  app.use(
+    `/${apiPrefix}/docs`,
+    apiReference({
+      spec: {
+        content: document,
+      },
+    }),
+  );
 
   const port = configService.get<number>('PORT', 3000);
   await app.listen(port, '0.0.0.0');

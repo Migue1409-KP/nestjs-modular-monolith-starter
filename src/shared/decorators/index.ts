@@ -4,3 +4,4 @@ export { OptionalAuth, OPTIONAL_AUTH_KEY } from './optional-auth.decorator';
 export { Transactional, TransactionalWithContext } from './transactional.decorator';
 export { ZodValidation } from './zod-validation.decorator';
 export { UserAgent } from './user.agent.decorator';
+export { ApiSuccessResponse } from './api-success-response.decorator';
