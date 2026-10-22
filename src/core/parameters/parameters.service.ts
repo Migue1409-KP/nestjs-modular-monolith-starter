@@ -6,7 +6,9 @@ import { Language } from './entities/languages.entity';
 export class ParametersService {
   constructor(private readonly languagesRepository: LanguagesRepository) {}
 
-  async findAllLanguages(): Promise<Language[]> {
-    return this.languagesRepository.findAll();
+  async findAllLanguages(includeInactive: boolean = false): Promise<Language[]> {
+    return includeInactive
+      ? this.languagesRepository.findAll()
+      : this.languagesRepository.findAllActive();
   }
 }

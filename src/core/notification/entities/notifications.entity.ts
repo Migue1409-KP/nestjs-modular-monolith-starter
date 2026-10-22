@@ -46,12 +46,12 @@ export class Notification {
   })
   status: NotificationStatus;
 
-  @Column({ type: 'timestamp', name: 'sent_at', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamptz', name: 'sent_at', default: () => 'CURRENT_TIMESTAMP' })
   sentAt: Date;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @UpdateDateColumn({ type: 'timestamptz', name: 'updated_at' })
   updatedAt: Date;
 }

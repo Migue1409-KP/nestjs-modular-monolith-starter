@@ -6,7 +6,7 @@ Este directorio contiene los seeders para poblar la base de datos con datos inic
 
 Los seeders se ejecutan en el siguiente orden para respetar las dependencias:
 
-1. **01-languages-countries.seeder.ts** - Idiomas, países y configuración de instrucción de cartas
+1. **01-languages-countries.seeder.ts** - Idiomas (con nombre nativo y estado activo/inactivo)
 2. **02-business-parameters.seeder.ts** - Parámetros de negocio del sistema
 3. **03-plans-addons.seeder.ts** - Planes de suscripción y addons de almacenamiento
 4. **04-notification-templates.seeder.ts** - Templates de notificaciones por email/SMS

@@ -14,12 +14,24 @@ export class Language {
   @Column({ type: 'varchar', unique: true, nullable: false })
   name: string;
 
-  @Column({ type: 'varchar', unique: true, nullable: false })
-  code: string; // ISO 639-1
+  @Column({
+    type: 'varchar',
+    length: 10,
+    unique: true,
+    nullable: false,
+    comment: 'ISO 639-1 two-letter language code',
+  })
+  code: string;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @Column({ type: 'varchar', length: 100, nullable: true, name: 'native_name' })
+  nativeName: string | null;
+
+  @Column({ type: 'boolean', default: true, name: 'is_active' })
+  isActive: boolean;
+
+  @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @UpdateDateColumn({ type: 'timestamptz', name: 'updated_at' })
   updatedAt: Date;
 }

@@ -13,7 +13,14 @@ export class LanguagesRepository extends Repository<Language> {
   }
 
   async findAll(queryRunner?: QueryRunner): Promise<Language[]> {
-    return this.getRepository(queryRunner).find();
+    return this.getRepository(queryRunner).find({ order: { name: 'ASC' } });
+  }
+
+  async findAllActive(queryRunner?: QueryRunner): Promise<Language[]> {
+    return this.getRepository(queryRunner).find({
+      where: { isActive: true },
+      order: { name: 'ASC' },
+    });
   }
 
   async findOneById(id: string, queryRunner?: QueryRunner): Promise<Language | null> {
