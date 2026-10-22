@@ -3,7 +3,8 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const isProd = process.env.NODE_ENV === 'production';
+// SSL depends on the database provider, not on NODE_ENV: opt in with DB_SSL=true.
+const useSsl = process.env.DB_SSL === 'true';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -13,7 +14,8 @@ export const AppDataSource = new DataSource({
   password: process.env.DB_PASSWORD || 'password',
   database: process.env.DB_NAME || 'nestjs_template',
   entities: [__dirname + '/../../**/*.entity{.ts,.js}'],
-  migrations: ['src/core/database/migrations/*{.ts,.js}'],
+  // __dirname-relative so it resolves both under ts-node (src/) and compiled (dist/)
+  migrations: [__dirname + '/migrations/*{.ts,.js}'],
   synchronize: false,
-  ssl: isProd ? { rejectUnauthorized: false } : false,
+  ssl: useSsl ? { rejectUnauthorized: false } : false,
 });
