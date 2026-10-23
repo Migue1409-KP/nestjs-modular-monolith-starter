@@ -100,11 +100,8 @@ export interface ApiError {
 }
 
 /** Unión estándar */
-export type ApiResponse<
-  T,
-  M extends BaseMeta = BaseMeta,
-  L extends TopLevelLinks = TopLevelLinks,
-> = ApiSuccess<T, M, L> | ApiFail | ApiError;
+export type ApiResponse<T, M extends BaseMeta = BaseMeta, L extends TopLevelLinks = TopLevelLinks> =
+  ApiSuccess<T, M, L> | ApiFail | ApiError;
 
 /** Helpers */
 export const isSuccess = <T, M extends BaseMeta, L extends TopLevelLinks>(

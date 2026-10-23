@@ -33,6 +33,15 @@ const baseSchema = z.object({
   DOMAIN: optionalString,
   COOKIE_CROSS_SITE: booleanString,
   LOG_LEVEL: optionalString,
+  // Reverse-proxy hops (or "true" / an IP list) so rate limiting sees the real client IP.
+  TRUST_PROXY: optionalString,
+  BODY_LIMIT: optionalString,
+  THROTTLE_TTL_MS: z.preprocess(emptyToUndefined, z.coerce.number().int().positive().optional()),
+  THROTTLE_LIMIT: z.preprocess(emptyToUndefined, z.coerce.number().int().positive().optional()),
+  THROTTLE_AUTH_LIMIT: z.preprocess(
+    emptyToUndefined,
+    z.coerce.number().int().positive().optional(),
+  ),
 
   DB_HOST: requiredString('DB_HOST'),
   DB_PORT: z.preprocess(emptyToUndefined, z.coerce.number().int().min(1).max(65535)),

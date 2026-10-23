@@ -13,6 +13,8 @@ import { apiReference } from '@scalar/nestjs-api-reference';
 import { parseFrontendUrls } from './shared/utils/frontend-url.util';
 import { mergeAuthOpenApi } from './shared/utils/merge-auth-openapi.util';
 import { AuthService } from '@thallesp/nestjs-better-auth';
+import { createSecurityHeadersMiddleware } from './shared/utils/security-headers.util';
+import { parseTrustProxy } from './shared/utils/trust-proxy.util';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 
@@ -25,6 +27,17 @@ async function bootstrap() {
   // Global prefix
   const apiPrefix = configService.get<string>('API_PREFIX', 'api/v1');
   app.setGlobalPrefix(apiPrefix);
+
+  // Release DB connections etc. on SIGTERM/SIGINT (container stops, rolling deploys).
+  app.enableShutdownHooks();
+
+  // Behind a reverse proxy (Railway, Fly, nginx...) the client IP comes from X-Forwarded-For.
+  const trustProxy = parseTrustProxy(configService.get<string>('TRUST_PROXY'));
+  if (trustProxy !== undefined) {
+    app.getHttpAdapter().getInstance().set('trust proxy', trustProxy);
+  }
+
+  app.use(createSecurityHeadersMiddleware(`/${apiPrefix}/docs`));
 
   // Global interceptors
   app.useGlobalInterceptors(
