@@ -56,4 +56,34 @@ describe('ApiKeyGuard', () => {
 
     expect(guard.canActivate(buildContext({ 'api-key': 'secret-key' }))).toBe(true);
   });
+
+  it('rejects every request when API_KEY is not configured', () => {
+    mockReflector.getAllAndOverride.mockReturnValue(false);
+    mockConfigService.get.mockReturnValue(undefined);
+
+    expect(() => guard.canActivate(buildContext({ 'api-key': 'anything' }))).toThrow(
+      'Invalid or missing API key',
+    );
+    expect(() => guard.canActivate(buildContext({ 'api-key': '' }))).toThrow(
+      'Invalid or missing API key',
+    );
+  });
+
+  it('rejects a key that only shares a prefix with the configured value', () => {
+    mockReflector.getAllAndOverride.mockReturnValue(false);
+    mockConfigService.get.mockReturnValue('secret-key');
+
+    expect(() => guard.canActivate(buildContext({ 'api-key': 'secret-key-extra' }))).toThrow(
+      'Invalid or missing API key',
+    );
+  });
+
+  it('rejects a non-string header value', () => {
+    mockReflector.getAllAndOverride.mockReturnValue(false);
+    mockConfigService.get.mockReturnValue('secret-key');
+
+    expect(() =>
+      guard.canActivate(buildContext({ 'api-key': ['secret-key'] as unknown as string })),
+    ).toThrow('Invalid or missing API key');
+  });
 });
