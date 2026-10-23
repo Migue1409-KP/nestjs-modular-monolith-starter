@@ -18,13 +18,14 @@ import { HttpModule } from '@/core/http/http.module';
     BetterAuthModule.forRootAsync({
       imports: [AuthConfigModule],
       inject: [AuthConfigFactory, ConfigService],
-      // disableGlobalAuthGuard: PolicyGuard handles auth+authz in a single pass,
-      // so we don't need the library's AuthGuard doubling up on getSession().
+      // PolicyGuard handles auth+authz in a single pass, so the library's global AuthGuard
+      // must not double up on getSession(). This is a module-level option: placed inside
+      // the useFactory result the library ignores it.
+      disableGlobalAuthGuard: true,
       useFactory: (factory: AuthConfigFactory, config: ConfigService) => {
         const limit = config.get<string>('BODY_LIMIT', '1mb');
         return {
           auth: factory.create(),
-          disableGlobalAuthGuard: true,
           // The Nest body parser is off in main.ts, so the size limit is set here.
           bodyParser: { json: { limit }, urlencoded: { limit } },
         };
