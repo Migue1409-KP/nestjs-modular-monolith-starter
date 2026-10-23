@@ -5,7 +5,8 @@ import { UsersService } from '../services/users.service';
 import { ZodValidationPipe } from '@/shared/pipes/zod-validation.pipe';
 import {
   CreateUserProfileDto,
-  CreateUserProfileSchema,
+  CreateUserProfileBodyDto,
+  CreateUserProfileBodySchema,
   CreateUserProfileSwaggerDto,
 } from '../dto/create-user.dto';
 import {
@@ -71,13 +72,13 @@ export class UsersController {
   })
   async createProfile(
     @Session() session: ExtendedUserSession,
-    @Body(new ZodValidationPipe(CreateUserProfileSchema)) body: CreateUserProfileDto,
+    @Body(new ZodValidationPipe(CreateUserProfileBodySchema)) body: CreateUserProfileBodyDto,
   ): Promise<ApiSuccess<CreateUserProfileDto>> {
     const authUserId = session.user.id;
     return {
       status: 'success',
       data: await this.usersService.createProfile(
-        { authUserId, email: session.user.email, ...body },
+        { ...body, authUserId, email: session.user.email },
         true,
       ),
     };

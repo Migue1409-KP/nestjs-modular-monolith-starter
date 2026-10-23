@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { UserRepository } from '../repositories/user-profiles.repository';
 import { LanguagesRepository } from '@/core/parameters/repositories/languages.repostiry';
-import { DataSource } from 'typeorm';
-import { NotFoundException } from '@nestjs/common';
+import { DataSource, QueryFailedError } from 'typeorm';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import { UserProfile } from '../entities/user-profiles.entity';
 
 // ─── Mocks ───────────────────────────────────────────────────────────────────
@@ -77,6 +77,18 @@ describe('UsersService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('createProfile', () => {
+    it('maps a unique violation to ConflictException', async () => {
+      mockUserRepository.createEntity.mockRejectedValue(
+        new QueryFailedError('INSERT', [], { code: '23505' } as any),
+      );
+
+      await expect(
+        service.createProfile({ authUserId: 'abc', email: 'a@b.com', name: 'John' }, true),
+      ).rejects.toThrow(ConflictException);
+    });
   });
 
   describe('findByAuthUserId', () => {
