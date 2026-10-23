@@ -11,6 +11,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ApiKeyGuard } from './shared/guards/api-key.guard';
 import { apiReference } from '@scalar/nestjs-api-reference';
 import { parseFrontendUrls } from './shared/utils/frontend-url.util';
+import { mergeAuthOpenApi } from './shared/utils/merge-auth-openapi.util';
+import { AuthService } from '@thallesp/nestjs-better-auth';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 
@@ -78,6 +80,14 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
+
+  // Fold the Better Auth endpoints (sign-in, sessions, magic link, OTP...) into the same reference.
+  try {
+    const authSchema = await (app.get(AuthService) as any).api.generateOpenAPISchema();
+    mergeAuthOpenApi(document, authSchema, `${apiPrefix}/auth`);
+  } catch (error) {
+    logger.warn(`Better Auth OpenAPI schema not merged: ${(error as Error).message}`);
+  }
 
   // Serve the OpenAPI spec (JSON/YAML) only outside production.
   const nonProductionEnvs = ['development', 'staging'];

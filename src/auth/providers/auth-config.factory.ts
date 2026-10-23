@@ -20,7 +20,7 @@ export class AuthConfigFactory {
   // HOST may come without scheme (e.g. "localhost"); Better Auth needs an absolute URL.
   private resolveBaseUrl(): string {
     const explicit = this.configService.get<string>('BETTER_AUTH_URL');
-    if (explicit) return explicit;
+    if (explicit) return new URL(explicit).origin; // path comes from basePath
     const host = this.configService.get<string>('HOST', 'http://localhost');
     const port = this.configService.get<string>('PORT', '3000');
     const withScheme = /^https?:\/\//.test(host) ? host : `http://${host}`;
