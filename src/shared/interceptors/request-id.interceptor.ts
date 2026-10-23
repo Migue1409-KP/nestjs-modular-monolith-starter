@@ -1,6 +1,6 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { v4 as uuid } from 'uuid';
+import { randomUUID } from 'crypto';
 import { map } from 'rxjs/operators';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class RequestIdInterceptor implements NestInterceptor {
     const response = ctx.getResponse();
 
     // 1. Generar un UUID único por request
-    const requestId = uuid();
+    const requestId = randomUUID();
 
     // 2. Inyectar en el objeto request (disponible en controllers/services)
     request.requestId = requestId;

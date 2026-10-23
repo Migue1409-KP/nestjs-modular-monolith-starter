@@ -1,6 +1,6 @@
 import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import * as mime from 'mime-types';
 import * as dayjs from 'dayjs';
 import { IStorageProvider, STORAGE_PROVIDER } from './interfaces/storage-provider.interface';
@@ -44,7 +44,7 @@ export class StorageService {
 
     const ext = this.resolveExtension(dto.filename, dto.mimeType);
     const month = dayjs().format('YYYY-MM');
-    const key = `${dto.assetType}/${month}/${uuidv4()}${ext}`;
+    const key = `${dto.assetType}/${month}/${randomUUID()}${ext}`;
 
     const { uploadUrl, publicUrl } = await this.provider.getPresignedUploadUrl({
       key,
