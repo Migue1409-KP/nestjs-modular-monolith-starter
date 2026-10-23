@@ -1,5 +1,5 @@
 import { AppDataSource } from '../data-source';
-import { seedLanguages } from './01-languages-countries.seeder';
+import { seedLanguagesAndCountries } from './01-languages-countries.seeder';
 
 async function runSeeders() {
   try {
@@ -11,7 +11,7 @@ async function runSeeders() {
 
     // 1. Languages (base data)
     console.log('📝 Step 1/1: Languages...');
-    await seedLanguages(AppDataSource);
+    await seedLanguagesAndCountries(AppDataSource);
 
     console.log('\n✅ All seeders completed successfully');
     await AppDataSource.destroy();

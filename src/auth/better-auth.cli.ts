@@ -1,8 +1,7 @@
 import { betterAuth } from 'better-auth';
 import { Pool } from 'pg';
 import * as dotenv from 'dotenv';
-import { emailOTP, lastLoginMethod, magicLink, openAPI } from 'better-auth/plugins';
-import { passkey } from 'better-auth/plugins/passkey';
+import { emailOTP, magicLink, openAPI } from 'better-auth/plugins';
 import { parseFrontendUrls } from '../shared/utils/frontend-url.util';
 
 // Cargar variables de entorno manualmente
@@ -10,8 +9,8 @@ dotenv.config();
 const trustedOrigins = parseFrontendUrls(process.env.FRONTEND_URL);
 
 export const auth = betterAuth({
-  url: `${process.env.HOST}:${process.env.PORT}` || 'http://localhost:3000',
-  basePath: `${process.env.API_PREFIX}/better-auth` || '/api/v1/better-auth',
+  baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:3000',
+  basePath: `/${process.env.API_PREFIX ?? 'api/v1'}/auth`,
   secret: process.env.BETTER_AUTH_SECRET || 'supersecret',
 
   database: new Pool({
@@ -25,11 +24,15 @@ export const auth = betterAuth({
     requireEmailVerification: true,
   },
 
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url, token }) => {},
+  },
+
   user: {
     modelName: 'users',
     changeEmail: {
       enabled: true,
-      sendChangeEmailVerification: async ({ user, newEmail, url, token }, request) => {},
+      sendChangeEmailConfirmation: async ({ user, newEmail, url, token }, request) => {},
     },
   },
 
@@ -63,7 +66,7 @@ export const auth = betterAuth({
   plugins: [
     openAPI(),
     magicLink({
-      sendMagicLink: async ({ email, token, url }, request) => {
+      sendMagicLink: async ({ email, token, url }, ctx) => {
         // send email to user
       },
     }),
