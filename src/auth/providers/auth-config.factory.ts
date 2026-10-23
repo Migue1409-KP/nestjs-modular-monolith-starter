@@ -31,11 +31,17 @@ export class AuthConfigFactory {
     const trustedOrigins = parseFrontendUrls(this.configService.get<string>('FRONTEND_URL'));
     const crossSiteCookies = this.configService.get<string>('COOKIE_CROSS_SITE') === 'true';
     const cookieDomain = this.configService.get<string>('DOMAIN') || undefined;
+    // No insecure fallbacks: a missing secret must stop the bootstrap (see env.validation.ts).
+    const authSecret = this.configService.getOrThrow<string>('BETTER_AUTH_SECRET');
+    const magicLinkSecret = this.configService.getOrThrow<string>('MAGIC_LINK_SECRET');
+    const magicLinkTokenLength = Number(
+      this.configService.get<number>('MAGIC_LINK_TOKEN_LENGTH', 32),
+    );
 
     return betterAuth({
       baseURL: this.resolveBaseUrl(),
       basePath: `/${this.configService.get<string>('API_PREFIX', 'api/v1')}/auth`,
-      secret: this.configService.get<string>('BETTER_AUTH_SECRET') || 'supersecret',
+      secret: authSecret,
 
       database: new Pool({
         connectionString: this.configService.get<string>('DATABASE_URL')!,
@@ -156,16 +162,13 @@ export class AuthConfigFactory {
             });
           },
           generateToken: async (email: string) => {
-            const tokenLength = parseInt(process.env.MAGIC_LINK_TOKEN_LENGTH ?? '32', 10);
-            const secretKey = process.env.MAGIC_LINK_SECRET || 'default-magic-secret';
-
             const randomBytes = crypto.randomBytes(32);
             const hash = crypto
-              .createHmac('sha256', secretKey)
+              .createHmac('sha256', magicLinkSecret)
               .update(email + randomBytes.toString('hex'))
               .digest('base64');
 
-            const token = hash.replace(/[^a-zA-Z0-9]/g, '').slice(0, tokenLength);
+            const token = hash.replace(/[^a-zA-Z0-9]/g, '').slice(0, magicLinkTokenLength);
             return token;
           },
         }),
