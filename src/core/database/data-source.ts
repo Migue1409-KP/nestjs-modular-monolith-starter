@@ -1,10 +1,8 @@
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
+import { resolveDbSsl } from './ssl.util';
 
 dotenv.config();
-
-// SSL depends on the database provider, not on NODE_ENV: opt in with DB_SSL=true.
-const useSsl = process.env.DB_SSL === 'true';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -17,5 +15,9 @@ export const AppDataSource = new DataSource({
   // __dirname-relative so it resolves both under ts-node (src/) and compiled (dist/)
   migrations: [__dirname + '/migrations/*{.ts,.js}'],
   synchronize: false,
-  ssl: useSsl ? { rejectUnauthorized: false } : false,
+  ssl: resolveDbSsl({
+    DB_SSL: process.env.DB_SSL,
+    DB_SSL_REJECT_UNAUTHORIZED: process.env.DB_SSL_REJECT_UNAUTHORIZED,
+    DB_SSL_CA: process.env.DB_SSL_CA,
+  }),
 });
