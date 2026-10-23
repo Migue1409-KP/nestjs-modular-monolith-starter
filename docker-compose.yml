@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_USER: ${DB_USERNAME:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
-      POSTGRES_DB: ${DB_DATABASE:-nestjs_template}
+      POSTGRES_DB: ${DB_NAME:-nestjs_template}
     ports:
       - "5432:5432"
     volumes:
