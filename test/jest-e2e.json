@@ -1,11 +1,22 @@
 {
-  "moduleFileExtensions": ["js", "json", "ts"],
+  "moduleFileExtensions": ["js", "mjs", "json", "ts"],
   "rootDir": "..",
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
+  "setupFiles": ["<rootDir>/test/e2e-setup.ts"],
+  "testTimeout": 30000,
   "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
+    "^.+\\.mjs$": "<rootDir>/test/esm-to-cjs.transformer.js",
+    "^.+\\.(t|j)s$": [
+      "ts-jest",
+      {
+        "tsconfig": "<rootDir>/test/tsconfig.e2e.json"
+      }
+    ]
   },
+  "transformIgnorePatterns": [
+    "node_modules/(@aws-sdk|@smithy|@nestjs|typeorm|rxjs|express|winston|pg|pg-pool|pg-protocol|@scalar|lodash|axios|zod|reflect-metadata|jest-[^/]+|@jest|typescript|ts-jest|supertest|superagent)/"
+  ],
   "moduleNameMapper": {
     "^@/(.*)$": "<rootDir>/src/$1"
   }
