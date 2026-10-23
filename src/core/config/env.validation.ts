@@ -49,6 +49,8 @@ const baseSchema = z.object({
   DB_PASSWORD: requiredString('DB_PASSWORD'),
   DB_NAME: requiredString('DB_NAME'),
   DB_SSL: booleanString,
+  DB_SSL_REJECT_UNAUTHORIZED: booleanString,
+  DB_SSL_CA: optionalString,
   DATABASE_URL: requiredString('DATABASE_URL'),
 
   BETTER_AUTH_SECRET: secret('BETTER_AUTH_SECRET', 32),
