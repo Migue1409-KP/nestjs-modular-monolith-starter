@@ -102,8 +102,7 @@ Con la aplicación levantada:
 
 | Recurso | URL |
 |---|---|
-| Referencia interactiva (Scalar): endpoints propios **y** de Better Auth | `http://localhost:3000/api/v1/docs` |
-| Referencia nativa de Better Auth | `http://localhost:3000/api/v1/auth/reference` |
+| Referencia interactiva (Scalar): endpoints propios **y** los de Better Auth | `http://localhost:3000/api/v1/docs` |
 | OpenAPI JSON / YAML (solo `development` y `staging`) | `/api/v1/download/openapi.json` · `/api/v1/download/openapi.yaml` |
 
 En Scalar puedes probar las peticiones directamente (*Test Request*). Para las rutas protegidas inicia sesión primero y envía el header `api-key`.

@@ -6,6 +6,12 @@ y versionado según [SemVer](https://semver.org/lang/es/), derivado de los tipos
 
 ## [Sin publicar]
 
+### Añadido
+- Plantillas de GitHub para issues (bug y mejora) y pull requests; los reportes de seguridad se redirigen al reporte privado.
+
+### Cambiado
+- El README ya no lista `/api/v1/auth/reference`: los endpoints de Better Auth se consultan en `/api/v1/docs`.
+
 ## [1.0.0] - 2026-10-23
 
 Primera versión estable. Actualización mayor de la autenticación: Better Auth 1.3 → 1.7 y `@thallesp/nestjs-better-auth` 2.1 → 2.8.

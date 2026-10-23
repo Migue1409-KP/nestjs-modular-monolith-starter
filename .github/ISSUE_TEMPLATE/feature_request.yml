@@ -1,0 +1,43 @@
+name: ✨ Proponer una mejora
+description: Sugiere una nueva funcionalidad o cambio
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problema
+    attributes:
+      label: Problema o necesidad
+      description: ¿Qué quieres resolver? Cuéntanos el contexto de uso.
+    validations:
+      required: true
+  - type: textarea
+    id: propuesta
+    attributes:
+      label: Propuesta
+      description: ¿Cómo imaginas la solución? Si afecta a la API, incluye ejemplos de petición/respuesta.
+    validations:
+      required: true
+  - type: textarea
+    id: alternativas
+    attributes:
+      label: Alternativas consideradas
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área afectada
+      multiple: true
+      options:
+        - Autenticación / Better Auth
+        - Autorización / roles
+        - Base de datos / migraciones
+        - Notificaciones
+        - Storage
+        - Documentación
+        - Tooling / CI
+        - Otra
+  - type: checkboxes
+    id: contribucion
+    attributes:
+      label: Contribución
+      options:
+        - label: Estoy dispuesto/a a enviar un pull request.
