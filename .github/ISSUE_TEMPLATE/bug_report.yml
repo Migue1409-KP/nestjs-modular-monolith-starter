@@ -1,0 +1,48 @@
+name: 🐛 Reportar un bug
+description: Algo no funciona como se espera
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por reportarlo. **No incluyas secretos** (`.env`, tokens, cookies) ni datos personales.
+        Si es una vulnerabilidad de seguridad, usa el [reporte privado](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/security/advisories/new).
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: Descripción
+      description: ¿Qué ocurre y qué esperabas que ocurriera?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduccion
+    attributes:
+      label: Pasos para reproducirlo
+      placeholder: |
+        1. Levantar la app con ...
+        2. Llamar a `POST /api/v1/...` con ...
+        3. Ver el error ...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs o respuesta de la API
+      description: Incluye el `requestId` si lo tienes. Quita cualquier dato sensible.
+      render: shell
+  - type: input
+    id: version
+    attributes:
+      label: Versión del proyecto
+      description: Tag o commit (por ejemplo `v1.0.0`).
+    validations:
+      required: true
+  - type: input
+    id: entorno
+    attributes:
+      label: Entorno
+      description: Node.js, PostgreSQL y sistema operativo.
+      placeholder: Node 22.23, PostgreSQL 15, Windows 11
+    validations:
+      required: true
