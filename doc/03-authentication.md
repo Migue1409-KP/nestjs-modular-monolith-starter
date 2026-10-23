@@ -28,3 +28,13 @@ Ambas tablas pueden enlazarse usando el ID (`userId`) de la tabla de sesión o u
 ## Endpoints Custom e Interoperabilidad
 
 Aunque BetterAuth te regala varios endpoints (`/api/auth/sign-in`, etc.), si debes inyectar lógica de negocio customizada tras el registro, puedes usar los **Hooks (callbacks)** dentro de las opciones de the BetterAuth Instance (por ejemplo capturar en `onSessionCreate` o `onUserCreate`).
+
+## Versiones y notas de actualización
+
+Versiones actuales: `better-auth@1.7.x` y `@thallesp/nestjs-better-auth@2.8.x` (requiere Node ≥ 22.12 para la CLI `auth`).
+
+- **CLI**: `@better-auth/cli` fue reemplazado por el paquete `auth`. Los scripts `npm run auth:generate` y `npm run auth:migrate` ya lo usan.
+- **Cambio de email** (`user.changeEmail`): desde 1.4 se envían dos correos. `sendChangeEmailConfirmation` va al correo actual y `emailVerification.sendVerificationEmail` al nuevo. Ambos usan hoy la plantilla `CHANGE_EMAIL`; si necesitas textos distintos, crea una plantilla nueva y cambia el `templateCode`.
+- **`baseURL`**: se calcula a partir de `HOST` y `PORT` (se añade `http://` si `HOST` no trae esquema). Puedes forzarla con `BETTER_AUTH_URL`; es obligatoria si despliegas detrás de un proxy con TLS.
+- **Sesión fresca** (`freshAge`): desde 1.6 se mide desde la creación de la sesión, así que las operaciones sensibles pueden pedir re-login antes.
+- **Passkey**: vive en el paquete `@better-auth/passkey` (hoy no se usa).

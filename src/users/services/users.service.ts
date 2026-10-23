@@ -1,10 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from '../repositories/user-profiles.repository';
 import { UserProfile } from '../entities/user-profiles.entity';
 import { CreateUserProfileDto } from '../dto/create-user.dto';
 import { UpdateUserProfileDto } from '../dto/update-user.dto';
 import { LanguagesRepository } from '@/core/parameters/repositories/languages.repostiry';
-import { DataSource } from 'typeorm';
+import { DataSource, QueryFailedError } from 'typeorm';
 import { Language } from '@/core/parameters/entities/languages.entity';
 import { Transactional } from '@/shared/decorators';
 
@@ -41,10 +41,15 @@ export class UsersService {
       });
     }
 
-    const userProfileResponse = await this.userProfileRepository.createEntity(
-      userProfileReq,
-      queryRunner,
-    );
+    const userProfileResponse = await this.userProfileRepository
+      .createEntity(userProfileReq, queryRunner)
+      .catch((error) => {
+        // 23505 = unique_violation (auth_user_id already has a profile)
+        if (error instanceof QueryFailedError && (error as any).driverError?.code === '23505') {
+          throw new ConflictException('User profile already exists for this user');
+        }
+        throw error;
+      });
 
     if (isInvokedFromController) {
       await this.userProfileRepository.updateUserNameByAuthUserId(

@@ -1,19 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { APIError, betterAuth } from 'better-auth';
+import { betterAuth } from 'better-auth';
 import { Pool } from 'pg';
-import {
-  createAuthMiddleware,
-  customSession,
-  emailOTP,
-  lastLoginMethod,
-  magicLink,
-  openAPI,
-} from 'better-auth/plugins';
+import { customSession, emailOTP, magicLink, openAPI } from 'better-auth/plugins';
 import { UsersService } from '@/users/services/users.service';
 import { ConfigService } from '@nestjs/config';
 import { NotificationService } from '@/core/notification/notification.service';
-import { auth } from '../better-auth.cli';
-import { passkey } from 'better-auth/plugins/passkey';
 import { parseFrontendUrls } from '@/shared/utils/frontend-url.util';
 import * as crypto from 'crypto';
 
@@ -26,16 +17,24 @@ export class AuthConfigFactory {
     private readonly mailService: NotificationService,
   ) {}
 
+  // HOST may come without scheme (e.g. "localhost"); Better Auth needs an absolute URL.
+  private resolveBaseUrl(): string {
+    const explicit = this.configService.get<string>('BETTER_AUTH_URL');
+    if (explicit) return explicit;
+    const host = this.configService.get<string>('HOST', 'http://localhost');
+    const port = this.configService.get<string>('PORT', '3000');
+    const withScheme = /^https?:\/\//.test(host) ? host : `http://${host}`;
+    return `${withScheme}:${port}`;
+  }
+
   create() {
     const trustedOrigins = parseFrontendUrls(this.configService.get<string>('FRONTEND_URL'));
     const crossSiteCookies = this.configService.get<string>('COOKIE_CROSS_SITE') === 'true';
     const cookieDomain = this.configService.get<string>('DOMAIN') || undefined;
 
     return betterAuth({
-      url:
-        `${this.configService.get<string>('HOST')}:${this.configService.get<string>('PORT')}` ||
-        'http://localhost:3000',
-      basePath: `${this.configService.get<string>('API_PREFIX')}/auth` || '/api/v1/auth',
+      baseURL: this.resolveBaseUrl(),
+      basePath: `/${this.configService.get<string>('API_PREFIX', 'api/v1')}/auth`,
       secret: this.configService.get<string>('BETTER_AUTH_SECRET') || 'supersecret',
 
       database: new Pool({
@@ -49,11 +48,27 @@ export class AuthConfigFactory {
         requireEmailVerification: true,
       },
 
+      // Since 1.4 changeEmail needs emailVerification.sendVerificationEmail: it delivers the
+      // link to the NEW address, while user.changeEmail.sendChangeEmailConfirmation goes to the current one.
+      emailVerification: {
+        sendVerificationEmail: async ({ user, url, token }) => {
+          await this.mailService.buildAndSendNotification({
+            email: user.email,
+            templateCode: 'CHANGE_EMAIL',
+            params: {
+              url,
+              token,
+              newEmail: user.email,
+            },
+          });
+        },
+      },
+
       user: {
         modelName: 'users',
         changeEmail: {
           enabled: true,
-          sendChangeEmailVerification: async ({ user, newEmail, url, token }, request) => {
+          sendChangeEmailConfirmation: async ({ user, newEmail, url, token }, request) => {
             await this.mailService.buildAndSendNotification({
               email: user.email,
               templateCode: 'CHANGE_EMAIL',
@@ -93,7 +108,7 @@ export class AuthConfigFactory {
           ],
           mapProfileToUser: (profile) => {
             this.logger.log('Google profile data:', profile);
-            return profile;
+            return { ...profile };
           },
         },
       },
@@ -130,7 +145,7 @@ export class AuthConfigFactory {
           };
         }),
         magicLink({
-          sendMagicLink: async ({ email, token, url }, request) => {
+          sendMagicLink: async ({ email, token, url }, ctx) => {
             await this.mailService.buildAndSendNotification({
               email: email,
               templateCode: 'MAGIC_LINK',

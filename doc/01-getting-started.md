@@ -4,7 +4,7 @@ Bienvenido al template base de **NestJS Modular Monolith**. Esta guía rápida t
 
 ## 1. Prerrequisitos
 
-* **Node.js**: v20 o superior recomendado.
+* **Node.js**: v22.12 o superior (requerido por la CLI `auth` de Better Auth 1.7).
 * **NPM/Yarn/PNPM**: manejador de paquetes de tu preferencia.
 * **PostgreSQL**: Servidor de base de datos local o en Docker.
 * **Docker y Docker Compose** *(Opcional)*: Recomendado si quieres levantar una instancia rápida de la base de datos de manera aislada.
