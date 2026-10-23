@@ -8,6 +8,7 @@ import { AuthModule } from '@/auth/auth.module';
 import { UsersModule } from '@/users/users.module';
 import { NotificationsModule } from '@/notifications/notifications.module';
 import { winstonConfig } from '@/core/config/winston.config';
+import { validateEnv } from '@/core/config/env.validation';
 import { AuthorizationModule } from '@/shared/authorization/authorization.module';
 import { PolicyGuard, AUTH_CLIENT_SERVICE } from '@/shared/guards/policy.guard';
 
@@ -16,6 +17,7 @@ import { PolicyGuard, AUTH_CLIENT_SERVICE } from '@/shared/guards/policy.guard';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
+      validate: validateEnv,
     }),
     WinstonModule.forRootAsync({
       useFactory: winstonConfig,
