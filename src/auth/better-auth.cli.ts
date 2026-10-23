@@ -1,7 +1,7 @@
 import { betterAuth } from 'better-auth';
 import { Pool } from 'pg';
 import * as dotenv from 'dotenv';
-import { emailOTP, magicLink, openAPI } from 'better-auth/plugins';
+import { magicLink, openAPI } from 'better-auth/plugins';
 import { parseFrontendUrls } from '../shared/utils/frontend-url.util';
 
 // Cargar variables de entorno manualmente
@@ -68,17 +68,6 @@ export const auth = betterAuth({
     magicLink({
       sendMagicLink: async ({ email, token, url }, ctx) => {
         // send email to user
-      },
-    }),
-    emailOTP({
-      async sendVerificationOTP({ email, otp, type }) {
-        if (type === 'sign-in') {
-          // Send the OTP for sign in
-        } else if (type === 'email-verification') {
-          // Send the OTP for email verification
-        } else {
-          // Send the OTP for password reset
-        }
       },
     }),
   ],

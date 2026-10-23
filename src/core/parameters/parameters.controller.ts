@@ -65,9 +65,4 @@ export class ParametersController {
       data: await this.parametersService.findAllLanguages(),
     };
   }
-
-  @Get('test')
-  async test(): Promise<string> {
-    return 'test';
-  }
 }

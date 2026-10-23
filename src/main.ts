@@ -81,7 +81,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
 
-  // Fold the Better Auth endpoints (sign-in, sessions, magic link, OTP...) into the same reference.
+  // Fold the Better Auth endpoints (sign-in, sessions, magic link...) into the same reference.
   try {
     const authSchema = await (app.get(AuthService) as any).api.generateOpenAPISchema();
     mergeAuthOpenApi(document, authSchema, `${apiPrefix}/auth`);

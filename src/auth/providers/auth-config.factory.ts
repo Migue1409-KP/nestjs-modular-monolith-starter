@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { betterAuth } from 'better-auth';
 import { Pool } from 'pg';
-import { customSession, emailOTP, magicLink, openAPI } from 'better-auth/plugins';
+import { customSession, magicLink, openAPI } from 'better-auth/plugins';
 import { UsersService } from '@/users/services/users.service';
 import { ConfigService } from '@nestjs/config';
 import { NotificationService } from '@/core/notification/notification.service';
@@ -167,17 +167,6 @@ export class AuthConfigFactory {
 
             const token = hash.replace(/[^a-zA-Z0-9]/g, '').slice(0, tokenLength);
             return token;
-          },
-        }),
-        emailOTP({
-          async sendVerificationOTP({ email, otp, type }) {
-            if (type === 'sign-in') {
-              // Send the OTP for sign in
-            } else if (type === 'email-verification') {
-              // Send the OTP for email verification
-            } else {
-              // Send the OTP for password reset
-            }
           },
         }),
       ],
