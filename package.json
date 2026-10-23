@@ -1,6 +1,6 @@
 {
   "name": "nestjs-modular-template",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "NestJS modular monolith starter with Better Auth, role-based authorization, TypeORM, Zod, Winston and Scalar API docs",
   "author": "Miguel Mosquera",
   "private": true,

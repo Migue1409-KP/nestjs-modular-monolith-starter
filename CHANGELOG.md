@@ -6,6 +6,8 @@ y versionado según [SemVer](https://semver.org/lang/es/), derivado de los tipos
 
 ## [Sin publicar]
 
+## [1.0.1] - 2026-10-23
+
 ### Añadido
 - Plantillas de GitHub para issues (bug y mejora) y pull requests; los reportes de seguridad se redirigen al reporte privado.
 
@@ -98,7 +100,8 @@ Primera versión estable. Actualización mayor de la autenticación: Better Auth
 ### Añadido
 - Plantilla inicial del monolito modular NestJS.
 
-[Sin publicar]: https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/compare/v1.0.0...HEAD
+[Sin publicar]: https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/compare/v0.1.5...v1.0.0
 [0.1.5]: https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/compare/v0.1.3...v0.1.4
