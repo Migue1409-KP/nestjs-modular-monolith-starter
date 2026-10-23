@@ -1,6 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
+import { createHash, timingSafeEqual } from 'crypto';
 
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
@@ -20,10 +21,22 @@ export class ApiKeyGuard implements CanActivate {
     const apiKeyHeader = request.headers['api-key'];
     const validApiKey = this.configService.get<string>('API_KEY');
 
-    if (!apiKeyHeader || apiKeyHeader !== validApiKey) {
+    // Fail closed: an unset API_KEY must never let a request through.
+    if (
+      !validApiKey ||
+      typeof apiKeyHeader !== 'string' ||
+      !this.safeEqual(apiKeyHeader, validApiKey)
+    ) {
       throw new UnauthorizedException('Invalid or missing API key');
     }
 
     return true;
+  }
+
+  // Constant-time comparison. Hashing first gives timingSafeEqual equal-length buffers
+  // without leaking the length of the configured key.
+  private safeEqual(received: string, expected: string): boolean {
+    const digest = (value: string) => createHash('sha256').update(value).digest();
+    return timingSafeEqual(digest(received), digest(expected));
   }
 }
