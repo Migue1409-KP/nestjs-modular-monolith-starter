@@ -6,6 +6,14 @@ y versionado según [SemVer](https://semver.org/lang/es/), derivado de los tipos
 
 ## [Sin publicar]
 
+### Eliminado
+- Plugin `emailOTP` de Better Auth (nunca envió códigos: `sendVerificationOTP` estaba vacío) y sus endpoints `/auth/email-otp/*`.
+- Endpoint de prueba `GET /parameters/test`.
+
+### Cambiado
+- Documentación alineada con el código: `doc/`, `agent_docs/`, `AGENTS.md` y el README de seeders describen ahora la autorización RBAC (`PolicyGuard`, `config/authorization.yaml`), el pipeline real de guards/interceptores, las variables `DB_*` vigentes (sin `DB_SYNCHRONIZE`), el flujo `auth:migrate` → `migration:run` → `seed` y Scalar en `/api/v1/docs`.
+- El README de seeders ya no hace referencia a seeders y datos de otro proyecto.
+
 ## [1.0.1] - 2026-10-23
 
 ### Añadido

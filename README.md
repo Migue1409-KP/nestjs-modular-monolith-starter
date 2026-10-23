@@ -9,7 +9,7 @@ Template base para proyectos en **NestJS**, diseñado para escalar como un **mon
 
 ## Características
 
-- 🔐 **Autenticación con Better Auth**: sesiones por cookie, magic link, email OTP y Google OAuth.
+- 🔐 **Autenticación con Better Auth**: sesiones por cookie, magic link y Google OAuth.
 - 🛡️ **Autorización por roles (RBAC)** definida en YAML, con roles `USER` y `ADMIN` y comprobación de propiedad de recursos.
 - 🗄️ **PostgreSQL + TypeORM** con migraciones y seeders idempotentes.
 - ✅ **Validación con Zod** y errores estándar **RFC 9457 (Problem Details)**.
@@ -88,7 +88,7 @@ Las completas en `.env` (plantilla en [`.env.example`](./.env.example)).
 
 ## Autenticación y autorización
 
-- **Autenticación**: Better Auth monta sus endpoints en `/api/v1/auth/*` (magic link, email OTP, Google, sesiones, cambio de email…). La sesión viaja en la cookie `better-auth.session_token`.
+- **Autenticación**: Better Auth monta sus endpoints en `/api/v1/auth/*` (magic link, Google, sesiones, cambio de email…). La sesión viaja en la cookie `better-auth.session_token`.
 - **Roles**: se guardan en `user_profiles.roles` (por defecto `USER`) y se inyectan en la sesión con `customSession`.
 - **Autorización**: `PolicyGuard` evalúa la matriz de [`config/authorization.yaml`](./config/authorization.yaml) por recurso y método HTTP. Las rutas con `@AllowAnonymous()` u `@OptionalAuth()` se saltan la comprobación.
 - **Propiedad de recursos**: un `USER` solo accede a su propio perfil (`/users/profile/:id`); `ADMIN` accede a todo.

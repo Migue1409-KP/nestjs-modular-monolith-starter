@@ -6,7 +6,7 @@ Optimize for **correctness**, **consistency with existing patterns**, and **smal
 ## Project Overview
 
 - This repository is a NestJS modular monolith template for SaaS / enterprise backends.
-- Tech stack: NestJS (TypeScript), Express, TypeORM (PostgreSQL), BetterAuth, Zod, Winston, AWS SES, Swagger.
+- Tech stack: NestJS 11 (TypeScript), Express, TypeORM (PostgreSQL), BetterAuth, Zod, Winston, AWS SES, Cloudflare R2, OpenAPI + Scalar. Node.js >= 22.12.
 - Always follow existing patterns from the `users` module and `agent_docs/*` before inventing new architectures.
 
 For deeper context, you MAY open docs under `agent_docs/` (start with `agent_docs/README.md`).
@@ -14,10 +14,12 @@ For deeper context, you MAY open docs under `agent_docs/` (start with `agent_doc
 ## Architecture & Conventions
 
 - Feature-first / modular monolith:
-  - `src/core`: infrastructure and cross-cutting concerns (DB, mailer, parameters, notifications).
-  - `src/shared`: interceptors, pipes (Zod), filters (ProblemDetails RFC9457), decorators, interfaces.
-  - `src/auth`: BetterAuth integration and auth controllers.
+  - `src/core`: infrastructure and cross-cutting concerns (DB, notifications/SES, parameters, storage/R2, health, HTTP client).
+  - `src/shared`: guards (`PolicyGuard`, `ApiKeyGuard`), authorization (RBAC), interceptors, pipes (Zod), filters (ProblemDetails RFC9457), decorators, interfaces, utils.
+  - `src/auth`: BetterAuth configuration and `local-auth` controller.
   - `src/users`: canonical example module (entity, repository, service, controller, DTOs, tests).
+  - `src/notifications`: admin endpoints for notifications.
+  - `config/authorization.yaml`: RBAC matrix (role → resource → HTTP methods). Every new route must be added here.
 
 - Language:
   - **English** for code comments, commit messages, internal docs for agents.
@@ -32,8 +34,10 @@ When asked to implement a new feature:
    - Entity (TypeORM) in `entities/`.
    - Repository extending `Repository<Entity>` with helper methods and optional `QueryRunner`.
    - Service with business logic and transactions.
-   - Controller with Zod validation, Swagger docs, and standardized responses.
+   - Controller with Zod validation, Swagger docs, and standardized responses (no `@UseGuards`; auth is global).
    - DTOs based on Zod schemas (+ Swagger DTO classes).
+   - Rows in `config/authorization.yaml` and ownership checks for `:id` resources.
+   - TypeORM migration for schema changes.
    - Unit tests mirroring the `users` module tests.
 
 See `agent_docs/FEATURE_WORKFLOW.md` and `agent_docs/USERS_MODULE_GUIDE.md` for details.
@@ -43,10 +47,12 @@ See `agent_docs/FEATURE_WORKFLOW.md` and `agent_docs/USERS_MODULE_GUIDE.md` for 
 Preferred commands:
 
 - `npm run start:dev` – start dev server in watch mode.
+- `npm run migration:generate --name=<Name>` – generate a TypeORM migration from entity changes.
 - `npm run migration:run` – apply TypeORM migrations.
-- `npm run auth:migrate` – apply BetterAuth schema changes.
-- `npm test` – run unit tests.
-- `npm run lint` – run lints (if configured).
+- `npm run auth:migrate` – apply BetterAuth schema changes (`auth:generate` regenerates the schema).
+- `npm run seed` – load languages and notification templates.
+- `npm test` – run unit tests (`test:cov` for coverage, `test:e2e` for e2e).
+- `npm run lint` – ESLint (runs with `--fix`); `npm run build` – compile.
 
 Agents SHOULD reason about which commands to run after changes.
 

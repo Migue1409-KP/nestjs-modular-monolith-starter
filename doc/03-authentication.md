@@ -4,8 +4,11 @@ Este template utiliza **[BetterAuth](https://better-auth.com/)**, una solución 
 
 ## Configuración Principal
 
-La lógica de conexión de BetterAuth reside normalmente en la carpeta `src/auth/` o mediante un archivo `better-auth.instance.ts` dependiendo de su implementación.
-BetterAuth usa **Cookies httpOnly** para manejar sesiones seguras en lugar de exponer tokens JWT al cliente.
+La configuración de Better Auth vive en `src/auth/providers/auth-config.factory.ts` (`AuthConfigFactory`), que registra los plugins `openAPI`, `customSession`, `magicLink` y el login con Google. `src/auth/better-auth.cli.ts` es una instancia equivalente que solo usa la CLI (`auth:generate` / `auth:migrate`); si cambias plugins o campos, actualiza **ambos** archivos.
+
+Better Auth monta sus endpoints bajo `/<API_PREFIX>/auth/*` (por defecto `/api/v1/auth/*`) y usa **cookies httpOnly** (`better-auth.session_token`) para manejar sesiones en lugar de exponer tokens JWT al cliente. Además, el template expone `GET /api/v1/local-auth/me` (sesión actual o `null`).
+
+Métodos habilitados: magic link y Google OAuth. Email + contraseña está deshabilitado (`emailAndPassword.enabled: false`).
 
 ## Ventajas de no usar JWT crudo
 
@@ -15,19 +18,36 @@ BetterAuth usa **Cookies httpOnly** para manejar sesiones seguras en lugar de ex
 ## Estructura de BD de BetterAuth
 
 BetterAuth crea estas tablas base al ejecutar `npm run auth:migrate`:
-- `user` (email, nombre, id principal)
-- `session` (tokens de sesión activos para un usuario)
-- `account` (proveedores sociales asociados, por si el usuario entra por Google y Apple al mismo tiempo).
-- `verification` (tokens OTP, contraseñas temporales)
+- `users` (email, nombre, id principal)
+- `sessions` (tokens de sesión activos para un usuario)
+- `accounts` (proveedores sociales asociados al usuario)
+- `verifications` (tokens de magic link y verificación de email)
+
+Los nombres están en plural porque la configuración define `modelName` para cada modelo.
 
 ### Relación con `users/`
 
-La tabla `user` proveniente de BetterAuth maneja exclusivamente credenciales. Las reglas pesadas de negocio, datos del perfil (avatar, preferencias, roles extendidos) pueden residir en la tabla `UserProfile` controlada por **TypeORM** en el directorio `src/users/`.
-Ambas tablas pueden enlazarse usando el ID (`userId`) de la tabla de sesión o usuario desde BetterAuth.
+La tabla `users` de Better Auth maneja exclusivamente credenciales e identidad. Los datos del perfil y los **roles** residen en `user_profiles` (entidad `UserProfile`, controlada por **TypeORM** en `src/users/`). Se enlazan por `user_profiles.auth_user_id` = `users.id`.
+
+El perfil se crea con `POST /api/v1/users/profile`; `authUserId` y `email` se toman siempre de la sesión.
+
+## Autorización (RBAC)
+
+Tras autenticar, se decide qué puede hacer cada usuario:
+
+1. **Roles**: se guardan en `user_profiles.roles` (`text[]`, por defecto `{USER}`; un usuario puede tener varios). Se inyectan en `session.user.roles` con el plugin `customSession`. Roles válidos: `ADMIN` y `USER` (`src/shared/authorization/constants/roles.constant.ts`).
+2. **Matriz**: `config/authorization.yaml` define, por rol, los recursos y métodos HTTP permitidos. `ADMIN` tiene `*`. El recurso es el patrón de la ruta sin el prefijo global (p. ej. `users/profile/:id`). Con varios roles se evalúa la unión: basta con que uno conceda el acceso.
+3. **`PolicyGuard`** (global) aplica la matriz. Responde `401` sin sesión y `403` sin permiso o sin roles. Las rutas con `@AllowAnonymous()` u `@OptionalAuth()` se saltan la comprobación. El `AuthGuard` global de la librería está desactivado (`disableGlobalAuthGuard`) porque `PolicyGuard` autentica y autoriza en una sola pasada.
+4. **Propiedad de recursos**: la matriz solo ve la ruta, así que las rutas con `:id` deben verificar la propiedad en el controller (ver `assertOwnerOrAdmin` en `users.controller.ts`).
+5. **API key**: independiente de la sesión; `ApiKeyGuard` exige el header `api-key` en toda ruta que no tenga `@Public()`.
+
+Para añadir un endpoint protegido, agrega una fila a `config/authorization.yaml`; para un rol nuevo, añádelo a `ROLES` y crea su sección en el YAML.
+
+Importa `AllowAnonymous` y `OptionalAuth` siempre desde `@/shared/decorators`, no desde la librería (una regla de ESLint lo impide).
 
 ## Endpoints Custom e Interoperabilidad
 
-Aunque BetterAuth te regala varios endpoints (`/api/auth/sign-in`, etc.), si debes inyectar lógica de negocio customizada tras el registro, puedes usar los **Hooks (callbacks)** dentro de las opciones de the BetterAuth Instance (por ejemplo capturar en `onSessionCreate` o `onUserCreate`).
+Aunque Better Auth ofrece varios endpoints (`/api/v1/auth/sign-in/...`, etc., visibles en `/api/v1/docs`), si necesitas lógica de negocio tras el registro puedes usar los **hooks** de la instancia de Better Auth (`databaseHooks`, `hooks`) dentro de `AuthConfigFactory`.
 
 ## Versiones y notas de actualización
 

@@ -35,18 +35,25 @@ Standard workflow for adding a new feature or domain module to the NestJS backen
 
 4. **Controller**
    - Create a controller under `src/<feature>/controllers/`.
-   - Use `@UseGuards` for authentication as needed.
-   - Use `ZodValidationPipe` with Zod schemas for bodies.
+   - Authentication and authorization are global (`PolicyGuard`): do **not** add `@UseGuards`. Use `@Session()` to read the session; use `@AllowAnonymous()` / `@OptionalAuth()` / `@Public()` (from `@/shared/decorators`) only for deliberate exceptions.
+   - Add the new routes to `config/authorization.yaml` (resource = route pattern without the global prefix, e.g. `products/:id`); otherwise `USER` gets 403.
+   - If a route exposes a resource by `:id`, enforce ownership in the controller (see `assertOwnerOrAdmin` in `users.controller.ts`).
+   - Use `ZodValidationPipe` with Zod schemas for bodies (`@Body(new ZodValidationPipe(Schema))`).
    - Document endpoints with `@nestjs/swagger` decorators and realistic examples.
-   - Wrap responses in the standardized success format.
+   - Return `ApiSuccess<T>` (`{ status: 'success', data }`); `ResponseInterceptor` adds `requestId` and wraps plain returns.
 
 5. **DTOs & Validation**
    - Define Zod schemas in `src/<feature>/dto/`.
    - Export DTO types as `z.infer<typeof Schema>`.
    - Provide Swagger DTO classes annotated with `@ApiProperty`.
 
-6. **Tests**
-   - Create Jest unit tests under `src/<feature>/services/__tests__/` or similar.
+6. **Module, migration & seed**
+   - Register entity (`TypeOrmModule.forFeature`), repository, service and controller in `src/<feature>/<feature>.module.ts` and import it in `AppModule`.
+   - Generate a migration for schema changes (`npm run migration:generate --name=...`, then `npm run migration:run`).
+   - Add idempotent seeders in `src/core/database/seeders/` when base data is needed.
+
+7. **Tests**
+   - Create Jest unit tests as `*.spec.ts` next to the code (e.g. `src/<feature>/services/<feature>.service.spec.ts`).
    - Mock repositories and other dependencies.
    - Cover success and error paths (e.g. entity not found, invalid state).
 
@@ -59,4 +66,5 @@ Standard workflow for adding a new feature or domain module to the NestJS backen
 ## Important Notes
 
 - Do not introduce new layers or patterns (e.g. CQRS, event sourcing) unless explicitly required.
-- Coordinate DB changes with TypeORM migrations and BetterAuth migrations when needed.
+- Coordinate DB changes with TypeORM migrations and BetterAuth migrations (`npm run auth:migrate`) when needed.
+- The `create-feature` skill (`.claude/skills/create-feature`) can scaffold a module from a DBML spec.

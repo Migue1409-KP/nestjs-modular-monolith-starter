@@ -1,25 +1,21 @@
-# Database Seeders - MyLasts API
+# Database Seeders
 
-Este directorio contiene los seeders para poblar la base de datos con datos iniciales.
+Este directorio contiene los seeders que cargan los datos base de la base de datos.
 
-## 📂 Estructura de Seeders
+## 📂 Estructura
 
-Los seeders se ejecutan en el siguiente orden para respetar las dependencias:
+Los seeders se ejecutan en este orden (lo define `run-seeders.ts`):
 
-1. **01-languages-countries.seeder.ts** - Idiomas (con nombre nativo y estado activo/inactivo)
-2. **02-business-parameters.seeder.ts** - Parámetros de negocio del sistema
-3. **03-plans-addons.seeder.ts** - Planes de suscripción y addons de almacenamiento
-4. **04-notification-templates.seeder.ts** - Templates de notificaciones por email/SMS
+1. **01-languages-countries.seeder.ts** - Idiomas (`es` Español, `en` English).
+2. **02-notification-templates.seeder.ts** - Plantillas de notificación por email con traducciones `en` y `es` (requiere los idiomas del paso 1).
 
-## 🚀 Cómo Ejecutar los Seeders
-
-### Opción 1: Ejecutar todos los seeders
+## 🚀 Cómo ejecutarlos
 
 ```bash
 npm run seed
 ```
 
-### Opción 2: Ejecutar con ts-node directamente
+Equivale a:
 
 ```bash
 ts-node -r tsconfig-paths/register src/core/database/seeders/run-seeders.ts
@@ -27,31 +23,35 @@ ts-node -r tsconfig-paths/register src/core/database/seeders/run-seeders.ts
 
 ## 📋 Prerequisitos
 
-Antes de ejecutar los seeders, asegúrate de:
+1. Base de datos creada y accesible (variables `DB_*` en `.env`).
+2. Tablas de Better Auth y migraciones de TypeORM aplicadas: `npm run auth:migrate` y `npm run migration:run`.
 
-1. Tener la base de datos creada
-2. Haber ejecutado todas las migraciones: `npm run migration:run`
-3. Tener las variables de entorno configuradas correctamente
+## 🔄 Comportamiento
 
-## 📝 Nota Importante sobre Notificaciones
+- **Idempotentes**: se pueden ejecutar varias veces sin duplicar datos.
+- **No destructivos**: solo insertan o actualizan, no eliminan.
+- Usan `ON CONFLICT DO NOTHING` (idiomas, por `id`) u `ON CONFLICT DO UPDATE` (plantillas y traducciones, por `code` y por `template` + `language`).
+- Los UUID de los idiomas son fijos, de modo que son consistentes entre ambientes.
 
-El seeder de notificaciones (`04-notification-templates.seeder.ts`) utiliza el archivo `insertNotifications.sql` ubicado en esta misma carpeta de seeders. Este archivo contiene todos los templates de notificaciones por email y SMS que utiliza el sistema.
+## 📚 Datos sembrados
 
-**El archivo ya está incluido en el repositorio** y no requiere configuración adicional.
+### Languages
 
-## 🔄 Comportamiento de los Seeders
+- Español (`es`)
+- English (`en`)
 
-- **Idempotentes**: Los seeders están diseñados para ser seguros de ejecutar múltiples veces
-- **No destructivos**: No eliminan datos existentes, solo insertan o actualizan
-- **Con manejo de conflictos**: Usan `ON CONFLICT DO NOTHING` o `ON CONFLICT DO UPDATE` según corresponda
+### Notification Templates
 
-## 🛠️ Desarrollo
+Plantillas (`en` + `es`) usadas por los correos de autenticación:
 
-### Crear un nuevo seeder
+- `MAGIC_LINK` (params: `url`, `token`)
+- `CHANGE_EMAIL` (params: `url`, `token`, `newEmail`)
 
-1. Crea un archivo en este directorio siguiendo el patrón: `NN-nombre-descriptivo.seeder.ts`
-2. Exporta una función async que reciba `DataSource` como parámetro
-3. Agrega el import y llamada en `run-seeders.ts` en el orden correcto
+## 🛠️ Crear un nuevo seeder
+
+1. Crea un archivo en este directorio con el patrón `NN-nombre-descriptivo.seeder.ts`.
+2. Exporta una función async que reciba un `DataSource`.
+3. Importa y llama la función en `run-seeders.ts` en el orden correcto.
 
 Ejemplo:
 
@@ -73,45 +73,6 @@ export async function seedMiNuevoSeeder(dataSource: DataSource): Promise<void> {
 
 ## ⚠️ Advertencias
 
-- Los seeders modifican la base de datos directamente
-- Ejecuta primero en desarrollo/staging antes de producción
-- Revisa los logs para detectar errores o warnings
-- Los IDs fijos (UUIDs) en los seeders están diseñados para ser consistentes entre ambientes
-
-## 📚 Datos Sembrados
-
-### Languages
-
-- Español (es)
-- Inglés (en)
-
-### Countries
-
-- United States (us)
-
-### Config Instruction Letter
-
-- DAILY, WEEKLY, MONTHLY con sus respectivas configuraciones
-
-### Business Parameters
-
-- `asset_lifecycle`: Ciclo de vida de assets
-- `access_code_expiration`: Expiración de códigos de acceso
-- `email_support_notification`: Email de soporte
-
-### Plans
-
-- **Essentials**: Plan básico con 2 beneficiarios
-- **Standard**: Plan estándar con multimedia
-- **Pro**: Plan profesional con 5 beneficiarios
-
-### Storage Addons
-
-- Addon de almacenamiento de 100MB
-
-### Notification Templates
-
-Seeded by `02-notification-templates.seeder.ts` (idempotent, `en` + `es`):
-
-- MAGIC_LINK (params: `url`, `token`)
-- CHANGE_EMAIL (params: `url`, `token`, `newEmail`)
+- Los seeders modifican la base de datos directamente.
+- Ejecútalos primero en desarrollo/staging antes de producción.
+- Revisa los logs para detectar errores o warnings.

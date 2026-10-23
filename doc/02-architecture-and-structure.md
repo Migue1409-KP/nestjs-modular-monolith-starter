@@ -4,30 +4,36 @@ El sistema está diseñado como un **Monolito Modular** (Modular Monolith) utili
 
 ## ¿Qué significa esto?
 
-A diferencia de organizar el proyecto por el tipo de archivo (todas las entidades juntas, todos los servicios juntos, etc.), aquí organizamos el código según **la capacidad o módulo de dominio** al que pertenece el módulo. Cada carpeta principal bajo `src/` representa un subdominio específico de la aplicación.
+A diferencia de organizar el proyecto por el tipo de archivo (todas las entidades juntas, todos los servicios juntos, etc.), aquí organizamos el código según **la capacidad o módulo de dominio** al que pertenece. Cada carpeta principal bajo `src/` representa un subdominio específico de la aplicación.
 
 ```text
 src/
-├── auth/           # Módulo enfocado en seguridad y sesiones
-├── users/          # Funcionalidades propias de usuarios (perfiles, avatares, roles)
-├── core/           # Módulos transversales esenciales a la app y la infraestructura
-└── shared/         # Helpers, DTOs compartidos, Filtros, Pipes
+├── auth/            # Configuración de Better Auth y endpoint local-auth/me
+├── users/           # Perfiles de usuario (módulo de ejemplo/canónico)
+├── notifications/   # Administración de notificaciones (rol ADMIN)
+├── core/            # Infraestructura transversal (DB, notificaciones, storage, health...)
+└── shared/          # Guards, autorización, interceptores, pipes, filtros, decoradores, utils
+config/
+└── authorization.yaml   # Matriz de autorización (rol → recurso → métodos HTTP)
 ```
 
 ## Separación de `core/` y `shared/`
 
 Es común confundir estas dos carpetas:
 
-* **`core/`**: Contiene módulos, servicios o configuraciones que solo deben instanciarse UNA VEZ en el ciclo de vida de la aplicación. Ejemplos de estos son la conexión a la base de datos y la configuración transaccional, la instancia global del cliente HTTP o la configuración del logger Winston. Nunca deberías importar `CoreModule` desde un módulo de dominio de manera suelta, su lugar está en `AppModule`.
-* **`shared/`**: Es para código "tonto", que no tiene estado o dependencias complejas. Generalmente contiene clases abstractas, interfaces, Dtypes, decoradores personales personalizados (ej: `@CurrentUser`), interceptores de log, `filters` de las excepciones (RFC 9457), y las validaciones con **Zod** (Zod Validation Pipe).
+* **`core/`**: Módulos de infraestructura con estado o dependencias externas que se instancian UNA VEZ. `CoreModule` es global e importa: `DatabaseModule` (TypeORM), `NotificationModule` (AWS SES, plantillas multi-idioma), `HttpModule` (cliente HTTP), `ParametersModule` (idiomas), `StorageModule` (Cloudflare R2 con presigned URLs) y `HealthModule`. También contiene la configuración (`config/`), las migraciones y los seeders. Su lugar está en `AppModule`; no lo importes desde módulos de dominio.
+* **`shared/`**: Código transversal reutilizable sin lógica de dominio: guards (`PolicyGuard`, `ApiKeyGuard`), autorización (`PolicyService`, constante `ROLES`), interceptores (`RequestId`, `Logging`, `Response`), el `ZodValidationPipe`, el filtro `ProblemDetailsFilter` (RFC 9457), decoradores (`@Public`, `@AllowAnonymous`, `@OptionalAuth`, `@Transactional`, `@ApiSuccessResponse`...), interfaces (`ApiSuccess`, `ProblemDetails`, sesión extendida) y utilidades.
 
 ## Ciclo de Vida de una Petición
 
-1. **Cliente HTTP**: Realiza la petición (ejemplo: POST `/api/users`).
-2. **Pipes / Validation**: (Zod Validation Pipe) valida la entrada garantizando que el DTO es seguro, si este falla retorna un error formatado según RFC 9457 indicando que campos están mal.
-3. **Guards / Interceptors**: Interceptores de Login y Auth se cruzan. Si la ruta está protegida, el `SessionGuard` verificara la cookie de sesión contra de BetterAuth. Adicionalmente `RequestIdInterceptor` inyecta un UUID en `AsyncLocalStorage` o request context.
-4. **Controllers**: Direcciona a la lógica interna de `UsersService`.
-5. **Services / UseCases**: Ejecutan la lógica del negocio.
-6. **Repositories**: (`UserProfilesRepository`) Manejan operaciones en PostgreSQL apoyadas sobre TypeORM.
+1. **Cliente HTTP**: realiza la petición (ejemplo: `POST /api/v1/users/profile`).
+2. **`ApiKeyGuard`** (global, `main.ts`): exige el header `api-key`, salvo en rutas marcadas con `@Public()`.
+3. **`PolicyGuard`** (global, `AppModule`): obtiene la sesión de Better Auth desde la cookie (una sola vez por petición) y consulta la matriz `config/authorization.yaml` según el rol(es) del usuario, el recurso y el método HTTP. Responde `401` sin sesión y `403` sin permiso. Se salta con `@AllowAnonymous()` u `@OptionalAuth()`.
+4. **Interceptores** (global): `RequestIdInterceptor` genera un UUID y lo deja en `request.requestId`; `LoggingInterceptor` registra método, URL, estado y duración; `ResponseInterceptor` envuelve la respuesta en `{ status: 'success', data, requestId }`.
+5. **Pipes**: `ZodValidationPipe` valida el body cuando recibe un schema (`@Body(new ZodValidationPipe(Schema))`); si falla, responde 400 con los errores de Zod.
+6. **Controllers**: delegan en `UsersService`, etc., y comprueban la propiedad de recursos por `:id` cuando aplica.
+7. **Services**: ejecutan la lógica de negocio; usan `@Transactional()` para escrituras multi-tabla.
+8. **Repositories**: (`UserRepository`) acceden a PostgreSQL mediante TypeORM.
+9. **`ProblemDetailsFilter`** (global): cualquier excepción se serializa como Problem Details (RFC 9457) dentro del envelope `{ status: 'error', error }` (`requestId` solo aparece si el cliente envía el header `x-request-id`).
 
-Este encapsulamiento asegura que no tengas un "Controller gigante", manteniendo dependencias localizadas.
+Este encapsulamiento evita "controllers gigantes" y mantiene las dependencias localizadas.

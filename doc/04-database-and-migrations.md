@@ -7,23 +7,20 @@ El persistente almacenamiento de información, configuración y perfiles estáti
 Cada vez que inicias el proyecto desde cero (o hay cambios en el schema), ejecuta en este orden:
 
 ```bash
-# 1. Genera el SQL que BetterAuth necesita para sus tablas internas
-npm run auth:generate
-
-# 2. Aplica las tablas de BetterAuth (user, session, account, verification)
+# 1. Aplica las tablas de BetterAuth (users, sessions, accounts, verifications)
 npm run auth:migrate
 
-# 3. (Solo si hay cambios en entidades de TypeORM) Genera la migración con nombre descriptivo
-npm run migration:generate --name=DescripcionDelCambio
-
-# 4. Aplica las migraciones de TypeORM (tablas de negocio: user_profiles, etc.)
+# 2. Aplica las migraciones de TypeORM (tablas de negocio: user_profiles, etc.)
 npm run migration:run
 
-# 5. Inicia la aplicación
+# 3. Carga datos base (idiomas y plantillas de notificación; idempotente)
+npm run seed
+
+# 4. Inicia la aplicación
 npm run start:dev
 ```
 
-> **Nota:** Los pasos 1, 2 y 4 son obligatorios al arrancar el proyecto por primera vez. El paso 3 solo es necesario cuando modificas entidades TypeORM.
+> **Nota:** Los pasos 1 a 3 son obligatorios al arrancar el proyecto por primera vez. `npm run auth:generate` (regenera el esquema de Better Auth) solo hace falta si cambias sus plugins o campos, y `npm run migration:generate --name=DescripcionDelCambio` solo cuando modificas entidades TypeORM.
 
 ---
 
@@ -33,27 +30,35 @@ En `.env` se definen las variables:
 ```env
 DB_HOST=localhost
 DB_PORT=5432
-DB_USERNAME=user
+DB_USERNAME=postgres
 DB_PASSWORD=secret
-DB_DATABASE=nest_template
-DB_SYNCHRONIZE=false
+DB_NAME=nestjs_template
+DB_SSL=false
+# Cadena de conexión que usa Better Auth (apunta a la misma base)
+DATABASE_URL=postgresql://postgres:secret@localhost:5432/nestjs_template
 ```
 
-⚠️ **NOTA:** NUNCA setees `DB_SYNCHRONIZE=true` en producción. Es fuertemente recomendado utilizar un archivo `.env` o `.env.test` con dicha bandera encendida únicamente para el pipeline e2e, o preferiblemente crear migraciones controladas.
+`DB_SSL=true` activa SSL si tu proveedor de BD lo exige (no depende de `NODE_ENV`).
+
+⚠️ **NOTA:** no existe una variable `DB_SYNCHRONIZE`. La aplicación activa `synchronize` de TypeORM automáticamente cuando `NODE_ENV` **no** es `production` ni `staging` (cómodo en local, pero puede alterar el esquema sin migraciones). En `production` y `staging` solo se usan migraciones, que se aplican de forma explícita (nunca al arrancar). El CLI de migraciones (`data-source.ts`) siempre tiene `synchronize: false`.
 
 ## Migraciones en TypeORM
 
-Dado que hemos modificado el control sobre la creación de tablas, toda alteración de esquema relacional en entidades decoradas (modelos de negocio) se aplicará con **migraciones**.
+Toda alteración de esquema relacional en entidades decoradas (modelos de negocio) debe quedar registrada en una **migración** (`src/core/database/migrations/`). Las entidades se descubren por patrón (`**/*.entity.ts`), por lo que nombra los archivos con el sufijo `.entity.ts`.
 
 ### 1. Generar una Migración
 
-Supongamos que modificas `LanguagesEntity` para agregar una nueva columna llamada `codeIso`:
+Supongamos que modificas la entidad `Language` para agregar una nueva columna llamada `codeIso`:
 
 ```bash
-npm run typeorm -- migration:generate src/core/database/migrations/AddCodeIsoToLanguages
+# Linux/Mac/Git Bash
+npm run migration:generate --name=AddCodeIsoToLanguages
+
+# Windows (cmd)
+set npm_config_name=AddCodeIsoToLanguages && npm run migration:generate
 ```
 
-El script de package.json leerá el `data-source.ts` el cual cargará tus entidades y comparará su código con lo que existe en DB, generando un SQL de tipo `ALTER TABLE`.
+El script lee `data-source.ts`, carga tus entidades y las compara con la base de datos, generando un SQL de tipo `ALTER TABLE`.
 
 ### 2. Ejecutar Migraciones Nuevas
 
@@ -65,11 +70,19 @@ npm run migration:run
 
 ### 3. Reversión
 
-A veces podemos cometer un error e insertar un script fallido o la lógica de retroceso está probando un despliegue sin éxito fallido:
+Si una migración falla o debes deshacerla, revierte la última aplicada:
 
 ```bash
 npm run migration:revert
 ```
+
+### 4. Producción
+
+En el entorno compilado usa `npm run migration:run:prod` (ejecuta las migraciones desde `dist/`), por ejemplo como comando previo al despliegue.
+
+## Seeders
+
+`npm run seed` carga datos base de forma idempotente (idiomas `es`/`en` y plantillas de notificación `MAGIC_LINK` y `CHANGE_EMAIL`). Ejecútalo después de `migration:run`. Más detalle en `src/core/database/seeders/README.md`.
 
 ## Repositorios Custom 
 

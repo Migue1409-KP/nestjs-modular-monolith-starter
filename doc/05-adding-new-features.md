@@ -1,6 +1,6 @@
 # Añadir Nuevas Funcionalidades (Features)
 
-Para mantener la Arquitectura Hexagonal/Domain Driven Design limpia, siempre crea un nuevo módulo con un dominio base en mente (ejemplo: `src/posts/`, `src/billing/`, `src/analytics/`).
+Para mantener el monolito modular ordenado, crea cada capacidad como un módulo propio con un dominio claro (ejemplo: `src/posts/`, `src/billing/`, `src/analytics/`). Usa `src/users/` como referencia.
 
 ## Pasos para un nuevo Dominio
 
@@ -47,45 +47,69 @@ En `entities/product.entity.ts`:
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('products')
-export class ProductEntity {
+export class Product {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column()
-  name: string;
+  name!: string;
 
   @Column('decimal')
-  price: number;
+  price!: number;
 }
 ```
 
-Añádelo al DataSource o a las entradas globales si la configuración del proyecto lo requiere (ej: usando glob pattern en app.module).
+No hace falta registrarla en el DataSource: se descubre por el patrón `**/*.entity.ts` (nombra el archivo `product.entity.ts`). Sí debes declararla en el módulo con `TypeOrmModule.forFeature([Product])`. Después genera y aplica la migración (`npm run migration:generate --name=AddProducts` y `npm run migration:run`).
 
 ### 4. Controlador y Servicio
 
-Conecta tu DTO con tus rutas utilizando el Decorador de Zod (Si cuentas con el `ZodValidationPipe` disponible en tu carpeta `shared/`).
+Conecta tu DTO con tus rutas usando `ZodValidationPipe` (en `src/shared/pipes/`) sobre el body. No añadas `@UseGuards`: la autenticación y la autorización son globales.
 
 ```typescript
-import { Controller, Post, Body, UsePipes } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { CreateProductDto, CreateProductSchema } from '../dto/create-product.dto';
-import { ZodValidationPipe } from '../../shared/pipes/zod-validation.pipe';
+import { ZodValidationPipe } from '@/shared/pipes/zod-validation.pipe';
+import { ApiSuccess } from '@/shared/interfaces/api-response';
 
 @Controller('products')
 export class ProductsController {
-  
-  // Utiliza pipes como este para asegurar la integridad de datos
   @Post()
-  @UsePipes(new ZodValidationPipe(CreateProductSchema))
-  create(@Body() createProductDto: CreateProductDto) {
-    // LLamar al servicio
+  async create(
+    @Body(new ZodValidationPipe(CreateProductSchema)) dto: CreateProductDto,
+  ): Promise<ApiSuccess<unknown>> {
+    // Llamar al servicio
+    return { status: 'success', data: null };
   }
 }
 ```
+
+### 5. Autorización
+
+Todo endpoint nuevo está **denegado** para el rol `USER` hasta que lo agregues a `config/authorization.yaml` (`ADMIN` tiene acceso total):
+
+```yaml
+roles:
+  USER:
+    - resource: 'products'
+      methods: ['GET']
+    - resource: 'products/:id'
+      methods: ['GET']
+```
+
+El `resource` es la ruta sin el prefijo global (`api/v1`). Si el recurso se identifica por `:id` y pertenece a un usuario, verifica la propiedad en el controller (ver `assertOwnerOrAdmin` en `users.controller.ts`).
+
+### 6. Registrar el módulo
+
+Declara controller, servicio y repositorio en `products.module.ts` e importa el módulo en `AppModule`.
+
+### 7. Tests
+
+Añade `*.spec.ts` junto al código (ver `src/users/services/users.service.spec.ts`) y ejecuta `npm test`.
 
 ## Logging Correcto con Winston
 
 Dentro del servicio (y siempre que sea útil para trazabilidad empresarial o depuración de errores), no uses un simple `console.log`.
 
-Utiliza el NestJS `Logger` de @nestjs/common instanciado adecuadamente que ya está acoplado a **Winston** desde `main.ts` y que preservará un `requestId`.
+Utiliza el `Logger` de `@nestjs/common` (`private readonly logger = new Logger(ProductsService.name)`), que ya está acoplado a **Winston** desde `main.ts`. Escribe en consola y en `logs/error.log` y `logs/combined.log`; el nivel se controla con `LOG_LEVEL` (por defecto `warn`).
 
-De esta forma puedes mapear todas las ejecuciones desde el llamado del Postman al final de la BD relacionando ese identificador.
+Cada petición recibe un `requestId` (UUID) que `LoggingInterceptor` incluye en su línea de log y que `ResponseInterceptor` devuelve en el body, de modo que puedes correlacionar una petición con su log.
