@@ -1,6 +1,6 @@
 {
   "name": "nestjs-modular-template",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "NestJS Modular Monolith Template with JWT Auth, TypeORM, Zod, Winston and ExpressJS",
   "author": "Your Name",
   "private": true,
