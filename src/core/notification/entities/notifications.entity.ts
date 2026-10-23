@@ -30,6 +30,9 @@ export class Notification {
   @Column({ type: 'varchar', length: 25, nullable: true })
   phone: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  subject: string | null;
+
   @Column({ type: 'text', name: 'body_html', nullable: true })
   bodyHtml: string;
 

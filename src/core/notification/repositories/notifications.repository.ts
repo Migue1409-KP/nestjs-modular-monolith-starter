@@ -51,6 +51,36 @@ export class NotificationsRepository extends Repository<Notification> {
     });
   }
 
+  async findPaginated(
+    filters: { status?: NotificationStatus; email?: string; templateCode?: string },
+    page: number,
+    pageSize: number,
+  ): Promise<[Notification[], number]> {
+    return await this.findAndCount({
+      where: {
+        ...(filters.status && { status: filters.status }),
+        ...(filters.email && { email: filters.email }),
+        ...(filters.templateCode && { template: { code: filters.templateCode } }),
+      },
+      relations: ['template'],
+      order: { createdAt: 'DESC' },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    });
+  }
+
+  /**
+   * Atomically moves a FAILED notification back to PENDING.
+   * Returns false when it was not FAILED (e.g. a concurrent retry already claimed it).
+   */
+  async claimFailedForRetry(id: string, queryRunner?: QueryRunner): Promise<boolean> {
+    const result = await this.getRepository(queryRunner).update(
+      { id, status: NotificationStatus.FAILED },
+      { status: NotificationStatus.PENDING },
+    );
+    return (result.affected ?? 0) > 0;
+  }
+
   async updateEntity(
     id: string,
     notification: Partial<Notification>,

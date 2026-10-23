@@ -13,7 +13,7 @@ import { ConfigService } from '@nestjs/config';
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 import { NotificationsRepository } from './repositories/notifications.repository';
 import { NotificationTemplatesRepository } from './repositories/notification-templates.repository';
-import { NotificationStatus } from './entities/notifications.entity';
+import { Notification, NotificationStatus } from './entities/notifications.entity';
 import { NotificationTemplateTranslationsRepository } from './repositories/notification-template-translations.repository';
 
 export interface BuildNotificationInput {
@@ -73,6 +73,22 @@ export class NotificationService {
   // método principal: armar y enviar notificación
   // ----------------------------------------------------------------
   async buildAndSendNotification(data: BuildNotificationInput) {
+    const notificationRecord = await this.buildNotification(data);
+    const status = await this.deliver(notificationRecord);
+
+    if (status === NotificationStatus.FAILED) {
+      throw new InternalServerErrorException({
+        message: `Failed to send email to ${notificationRecord.email}`,
+      });
+    }
+
+    return { success: true };
+  }
+
+  // ----------------------------------------------------------------
+  // Renderiza el template y registra la notificación en estado PENDING
+  // ----------------------------------------------------------------
+  async buildNotification(data: BuildNotificationInput): Promise<Notification> {
     const { email, phone, subject, templateCode, params } = data;
 
     const mergedParams = { ...this.defaultParams, ...params };
@@ -112,50 +128,54 @@ export class NotificationService {
     const finalSubject = subject ?? render(template.subject) ?? 'Notification';
 
     // Registrar la notificación en la base de datos
-    const notificationRecord = await this.notificationsRepository.createEntity({
+    return await this.notificationsRepository.createEntity({
       template: template.template,
       email: email,
       phone: phone,
+      subject: finalSubject,
       bodyHtml: html,
       bodyText: sms,
       params: mergedParams,
       status: NotificationStatus.PENDING,
     });
+  }
 
+  // ----------------------------------------------------------------
+  // Si la notificación tiene un canal entregable (por ahora solo email)
+  // ----------------------------------------------------------------
+  isDeliverable(notification: Pick<Notification, 'email' | 'bodyHtml'>): boolean {
+    return Boolean(notification.email && notification.bodyHtml);
+  }
+
+  // ----------------------------------------------------------------
+  // Entrega una notificación ya registrada y persiste el estado resultante.
+  // No lanza si el envío falla: devuelve FAILED. Sin canal entregable queda PENDING.
+  // ----------------------------------------------------------------
+  async deliver(notification: Notification): Promise<NotificationStatus> {
     // Enviar email si corresponde
-    if (email && html) {
-      const status = await this.sendEmail(email, finalSubject, html)
+    if (this.isDeliverable(notification)) {
+      const status = await this.sendEmail(
+        notification.email,
+        notification.subject ?? 'Notification',
+        notification.bodyHtml,
+      )
         .then(() => NotificationStatus.SENT)
-        .catch((error) => {
-          this.logger.error(`Failed to send notification ${notificationRecord.id}`);
+        .catch(() => {
+          this.logger.error(`Failed to send notification ${notification.id}`);
           return NotificationStatus.FAILED;
         });
 
-      await this.notificationsRepository.updateStatus(notificationRecord.id, status);
+      await this.notificationsRepository.updateEntity(notification.id, {
+        status,
+        ...(status === NotificationStatus.SENT && { sentAt: new Date() }),
+      });
 
-      if (status === NotificationStatus.FAILED) {
-        throw new InternalServerErrorException({
-          message: `Failed to send email to ${email}`,
-        });
-      }
+      return status;
     }
 
     // Enviar SMS si corresponde (por ahora deshabilitado)
-    // if (phone && sms) {
-    //   const status = await this.sendSms(phone, sms)
-    //     .then(() => NotificationStatus.SENT)
-    //     .catch(() => NotificationStatus.FAILED);
 
-    //   await this.notificationsRepository.updateStatus(notificationRecord.id, status);
-
-    //   if (status === NotificationStatus.FAILED) {
-    //     throw new InternalServerErrorException({
-    //       message: `Failed to send SMS to ${phone}`,
-    //     });
-    //   }
-    // }
-
-    return { success: true };
+    return NotificationStatus.PENDING;
   }
 
   // ----------------------------------------------------------------

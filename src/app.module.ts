@@ -6,6 +6,7 @@ import { AuthService } from '@thallesp/nestjs-better-auth';
 import { CoreModule } from '@/core/core.module';
 import { AuthModule } from '@/auth/auth.module';
 import { UsersModule } from '@/users/users.module';
+import { NotificationsModule } from '@/notifications/notifications.module';
 import { winstonConfig } from '@/core/config/winston.config';
 import { AuthorizationModule } from '@/shared/authorization/authorization.module';
 import { PolicyGuard, AUTH_CLIENT_SERVICE } from '@/shared/guards/policy.guard';
@@ -24,6 +25,7 @@ import { PolicyGuard, AUTH_CLIENT_SERVICE } from '@/shared/guards/policy.guard';
     AuthModule,
     AuthorizationModule,
     UsersModule,
+    NotificationsModule,
   ],
   providers: [
     {
