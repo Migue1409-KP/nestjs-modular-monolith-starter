@@ -18,7 +18,7 @@ cp .env.example .env
 ```
 
 Asegúrate de configurar los parámetros obligatorios:
-* Acceso a PostgreSQL (`DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_DATABASE`).
+* Acceso a PostgreSQL (`DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_NAME`).
 * Claves de BetterAuth (`BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`).
 * Claves para AWS SES o el servicio de notificaciones dependiendo el implementado en local.
 
