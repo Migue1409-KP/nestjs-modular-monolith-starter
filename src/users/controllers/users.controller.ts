@@ -1,5 +1,14 @@
 // users.controller.ts
-import { Controller, Post, Body, HttpCode, Patch, Param, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  Patch,
+  Param,
+  Get,
+  ForbiddenException,
+} from '@nestjs/common';
 import { Session } from '@thallesp/nestjs-better-auth';
 import { UsersService } from '../services/users.service';
 import { ZodValidationPipe } from '@/shared/pipes/zod-validation.pipe';
@@ -18,12 +27,23 @@ import { ApiBody, ApiOperation, ApiResponse, ApiSecurity, ApiParam } from '@nest
 import { ApiSuccess } from '@/shared/interfaces/api-response';
 import { UserProfile } from '../entities/user-profiles.entity';
 import { ExtendedUserSession } from '@/shared/interfaces/extended-session';
+import { ROLES } from '@/shared/authorization/constants/roles.constant';
 
 @Controller('users')
 @ApiSecurity('apiKeyAuth')
 @ApiSecurity('cookieAuth')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  // The RBAC matrix only checks the route, so ownership of :id is enforced here.
+  // Non-admins get a uniform 403 whether the profile is foreign or does not exist.
+  private async assertOwnerOrAdmin(session: ExtendedUserSession, profileId: string) {
+    if (session.user.roles?.includes(ROLES.ADMIN)) return;
+    const own = await this.usersService.findByAuthUserId(session.user.id);
+    if (!own?.id || own.id !== profileId) {
+      throw new ForbiddenException('Access denied');
+    }
+  }
 
   @Post('profile')
   @HttpCode(201)
@@ -122,6 +142,10 @@ export class UsersController {
     description: 'Unauthorized - missing or invalid session cookie',
   })
   @ApiResponse({
+    status: 403,
+    description: 'Forbidden - the profile belongs to another user',
+  })
+  @ApiResponse({
     status: 404,
     description: 'User profile not found',
   })
@@ -130,9 +154,11 @@ export class UsersController {
     description: 'Internal server error',
   })
   async updateProfile(
+    @Session() session: ExtendedUserSession,
     @Param('id') id: string,
     @Body(new ZodValidationPipe(UpdatePartialUserProfileSchema)) body: UpdateUserProfileDto,
   ): Promise<ApiSuccess<UserProfile>> {
+    await this.assertOwnerOrAdmin(session, id);
     return {
       status: 'success',
       data: await this.usersService.updateProfile(id, body),
@@ -226,6 +252,10 @@ export class UsersController {
     description: 'Unauthorized - missing or invalid session cookie',
   })
   @ApiResponse({
+    status: 403,
+    description: 'Forbidden - the profile belongs to another user',
+  })
+  @ApiResponse({
     status: 404,
     description: 'User profile not found',
   })
@@ -233,7 +263,11 @@ export class UsersController {
     status: 500,
     description: 'Internal server error',
   })
-  async getProfileById(@Param('id') id: string): Promise<ApiSuccess<any>> {
+  async getProfileById(
+    @Session() session: ExtendedUserSession,
+    @Param('id') id: string,
+  ): Promise<ApiSuccess<any>> {
+    await this.assertOwnerOrAdmin(session, id);
     return {
       status: 'success',
       data: await this.usersService.findProfileById(id),
