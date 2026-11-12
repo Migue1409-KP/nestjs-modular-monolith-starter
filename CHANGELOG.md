@@ -10,6 +10,10 @@ y versionado según [SemVer](https://semver.org/lang/es/), derivado de los tipos
 - Google OAuth ya no pide por defecto scopes sensibles (género, cumpleaños, direcciones) ni acceso `offline`, y deja de registrar el perfil completo en los logs. Los scopes extra son opt-in con `GOOGLE_SCOPES`.
 - Las plantillas de notificación reemplazan los placeholders en una sola pasada (sin `RegExp` con claves sin escapar) y escapan HTML en los valores de los cuerpos HTML, evitando inyección de marcado en los correos.
 
+### Docker
+- El `Dockerfile` ahora copia `config/authorization.yaml` a la imagen (sin él `PolicyService` no arrancaba), corre como usuario `node` (no root), define un `HEALTHCHECK` sobre `/health`, instala dependencias con `--ignore-scripts` (el `prepare` de husky rompía `npm ci --omit=dev`) y se acompaña de un `.dockerignore`.
+- `docker-compose.yml` incorpora el servicio `app` bajo el perfil opcional `app` (`docker compose --profile app up -d --build`); por defecto sigue levantando solo Postgres.
+
 ### Eliminado
 - Código muerto: `AuthService` local (stubs `afterSignUp`, `getUserProfileByGoogleId` y `handleAuthError`), `ActiveSubscriptionInterceptor`, los DTO `login`/`register` sin uso y el `.gitkeep` de la raíz.
 - `skills-lock.json` y los skills personales `better-auth-best-practices` y `nestjs-expert` salen del control de versiones (siguen en `.gitignore`); `create-feature` se mantiene.
