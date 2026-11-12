@@ -1,0 +1,31 @@
+# Dependencies and build output are produced inside the image
+node_modules
+dist
+coverage
+logs
+*.tsbuildinfo
+
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+
+# VCS, CI and editor files
+.git
+.github
+.husky
+.vscode
+.idea
+
+# Docs, agent files and tooling not needed at runtime
+*.md
+doc
+agent_docs
+.claude
+test
+sonar-project.properties
+docker-compose*.yml
+Dockerfile
+.dockerignore
+openapi.json
+openapi.yaml

@@ -39,6 +39,12 @@ En caso de no tener una DB instalada localmente, puedes usar Docker (el reposito
 docker-compose up -d postgres
 ```
 
+El mismo `docker-compose.yml` puede construir y levantar también la API (perfil opcional `app`). La imagen corre como usuario no root, incluye `config/authorization.yaml` y un `HEALTHCHECK` sobre `/<API_PREFIX>/health`; las migraciones se siguen ejecutando aparte (paso 5):
+
+```bash
+docker compose --profile app up -d --build
+```
+
 ## 5. Correr Migraciones de BD
 
 El template viene preparado con dos tipos de estructuras: TypeORM (Modelos de negocio) y BetterAuth (Modelo de autenticación/sesiones).
