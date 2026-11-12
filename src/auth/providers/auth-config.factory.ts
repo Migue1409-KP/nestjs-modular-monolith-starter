@@ -58,7 +58,7 @@ export class AuthConfigFactory {
       // link to the NEW address, while user.changeEmail.sendChangeEmailConfirmation goes to the current one.
       emailVerification: {
         sendVerificationEmail: async ({ user, url, token }) => {
-          await this.mailService.buildAndSendNotification({
+          await this.mailService.notify({
             email: user.email,
             templateCode: 'CHANGE_EMAIL',
             params: {
@@ -75,7 +75,7 @@ export class AuthConfigFactory {
         changeEmail: {
           enabled: true,
           sendChangeEmailConfirmation: async ({ user, newEmail, url, token }, request) => {
-            await this.mailService.buildAndSendNotification({
+            await this.mailService.notify({
               email: user.email,
               templateCode: 'CHANGE_EMAIL',
               params: {
@@ -152,7 +152,7 @@ export class AuthConfigFactory {
         }),
         magicLink({
           sendMagicLink: async ({ email, token, url }, ctx) => {
-            await this.mailService.buildAndSendNotification({
+            await this.mailService.notify({
               email: email,
               templateCode: 'MAGIC_LINK',
               params: {
