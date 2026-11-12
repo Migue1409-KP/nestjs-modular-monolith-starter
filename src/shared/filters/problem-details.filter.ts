@@ -24,16 +24,19 @@ export class ProblemDetailsFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const r = exception.getResponse();
+      const body =
+        typeof r === 'string'
+          ? {}
+          : (r as { message?: string; data?: unknown[]; errors?: unknown[] });
       problem = {
         type: 'about:blank',
         title: HttpStatus[status] || 'Unknown Error',
         status,
-        detail: typeof r === 'string' ? r : (r as any).message,
+        detail: typeof r === 'string' ? r : body.message,
         instance: request.url,
-        ...(typeof r !== 'string' &&
-          ((r as any).data?.length > 0 || (r as any).errors?.length > 0) && {
-            errors: (r as any).data || (r as any).errors,
-          }),
+        ...(((body.data?.length ?? 0) > 0 || (body.errors?.length ?? 0) > 0) && {
+          errors: body.data || body.errors,
+        }),
       };
     } else {
       status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -46,7 +49,7 @@ export class ProblemDetailsFilter implements ExceptionFilter {
         detail:
           process.env.NODE_ENV === 'production'
             ? 'Unexpected error'
-            : (exception as any)?.message || 'Unexpected error',
+            : (exception instanceof Error && exception.message) || 'Unexpected error',
         instance: request.url,
       };
     }

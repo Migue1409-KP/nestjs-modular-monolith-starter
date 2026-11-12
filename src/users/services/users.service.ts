@@ -8,6 +8,10 @@ import { DataSource, QueryFailedError } from 'typeorm';
 import { Language } from '@/core/parameters/entities/languages.entity';
 import { Transactional } from '@/shared/decorators';
 
+// A missing last name must not leak "null"/"undefined" into the Better Auth display name.
+const fullName = (name: string, lastname?: string | null) =>
+  [name, lastname].filter(Boolean).join(' ');
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -25,7 +29,7 @@ export class UsersService {
     const userProfileReq: UserProfile = {
       ...new UserProfile(),
       ...data,
-      language: { id: data.languageId, ...new Language() },
+      language: data.languageId ? Object.assign(new Language(), { id: data.languageId }) : null,
     };
 
     if (data.languageId && !(await this.languageRepository.findOneById(data.languageId))) {
@@ -45,7 +49,10 @@ export class UsersService {
       .createEntity(userProfileReq, queryRunner)
       .catch((error) => {
         // 23505 = unique_violation (auth_user_id already has a profile)
-        if (error instanceof QueryFailedError && (error as any).driverError?.code === '23505') {
+        if (
+          error instanceof QueryFailedError &&
+          (error.driverError as { code?: string } | undefined)?.code === '23505'
+        ) {
           throw new ConflictException('User profile already exists for this user');
         }
         throw error;
@@ -54,7 +61,7 @@ export class UsersService {
     if (isInvokedFromController) {
       await this.userProfileRepository.updateUserNameByAuthUserId(
         data.authUserId,
-        `${data.name} ${data.lastname}`.trim(),
+        fullName(data.name, data.lastname),
         queryRunner,
       );
     }
@@ -62,8 +69,10 @@ export class UsersService {
     return userProfileResponse;
   }
 
-  async findByAuthUserId(authUserId: string): Promise<UserProfile & { provider: string }> {
+  /** Returns null when the Better Auth user has no profile yet. */
+  async findByAuthUserId(authUserId: string): Promise<(UserProfile & { provider: string }) | null> {
     const user = await this.userProfileRepository.findOneByAuthUserId(authUserId);
+    if (!user) return null;
     const provider = await this.userProfileRepository.getProviderLogin(authUserId);
     return { ...user, provider };
   }
@@ -93,7 +102,7 @@ export class UsersService {
     const updateData: Partial<UserProfile> = { ...restData };
 
     if (languageId) {
-      updateData.language = { id: languageId, ...new Language() };
+      updateData.language = Object.assign(new Language(), { id: languageId });
     }
 
     const updatedProfile = await this.userProfileRepository.updateEntity(
@@ -112,7 +121,7 @@ export class UsersService {
     ) {
       await this.userProfileRepository.updateUserNameByAuthUserId(
         updatedProfile.authUserId,
-        `${updatedProfile.name} ${updatedProfile.lastname}`.trim(),
+        fullName(updatedProfile.name, updatedProfile.lastname),
         queryRunner,
       );
     }

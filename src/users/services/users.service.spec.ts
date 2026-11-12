@@ -92,6 +92,13 @@ describe('UsersService', () => {
   });
 
   describe('findByAuthUserId', () => {
+    it('should return null when the auth user has no profile yet', async () => {
+      mockUserRepository.findOneByAuthUserId.mockResolvedValue(null);
+
+      await expect(service.findByAuthUserId('missing')).resolves.toBeNull();
+      expect(mockUserRepository.getProviderLogin).not.toHaveBeenCalled();
+    });
+
     it('should return user profile combined with provider info', async () => {
       mockUserRepository.findOneByAuthUserId.mockResolvedValue(mockUserProfile);
       mockUserRepository.getProviderLogin.mockResolvedValue('credential');
@@ -99,8 +106,8 @@ describe('UsersService', () => {
       const result = await service.findByAuthUserId('auth-user-uuid-1');
 
       expect(mockUserRepository.findOneByAuthUserId).toHaveBeenCalledWith('auth-user-uuid-1');
-      expect(result.id).toEqual('profile-uuid-1');
-      expect(result.provider).toEqual('credential');
+      expect(result?.id).toEqual('profile-uuid-1');
+      expect(result?.provider).toEqual('credential');
     });
   });
 

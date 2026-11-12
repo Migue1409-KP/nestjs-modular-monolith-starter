@@ -50,12 +50,12 @@ export class UserRepository extends Repository<UserProfile> {
 
   async deleteEntity(id: string, queryRunner?: QueryRunner): Promise<boolean> {
     const result = await this.getRepository(queryRunner).delete(id);
-    return result.affected !== null && result.affected > 0;
+    return (result.affected ?? 0) > 0;
   }
 
   async softDeleteProfile(id: string, queryRunner?: QueryRunner): Promise<boolean> {
     const result = await this.getRepository(queryRunner).softDelete(id);
-    return result.affected !== null && result.affected > 0;
+    return (result.affected ?? 0) > 0;
   }
 
   async updateUserNameByAuthUserId(

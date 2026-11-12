@@ -105,8 +105,8 @@ export class NotificationService {
       email: email,
       phone: phone,
       subject: finalSubject,
-      bodyHtml: html,
-      bodyText: sms,
+      bodyHtml: html ?? undefined,
+      bodyText: sms ?? undefined,
       params,
       status: NotificationStatus.PENDING,
     });

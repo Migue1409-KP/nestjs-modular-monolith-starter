@@ -92,7 +92,7 @@ export class NotificationsRepository extends Repository<Notification> {
 
   async deleteEntity(id: string, queryRunner?: QueryRunner): Promise<boolean> {
     const result = await this.getRepository(queryRunner).delete(id);
-    return result.affected > 0;
+    return (result.affected ?? 0) > 0;
   }
 
   async updateStatus(

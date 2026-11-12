@@ -10,6 +10,11 @@ y versionado según [SemVer](https://semver.org/lang/es/), derivado de los tipos
 - Google OAuth ya no pide por defecto scopes sensibles (género, cumpleaños, direcciones) ni acceso `offline`, y deja de registrar el perfil completo en los logs. Los scopes extra son opt-in con `GOOGLE_SCOPES`.
 - Las plantillas de notificación reemplazan los placeholders en una sola pasada (sin `RegExp` con claves sin escapar) y escapan HTML en los valores de los cuerpos HTML, evitando inyección de marcado en los correos.
 
+### TypeScript
+- Se activan `strictNullChecks` y `noImplicitAny` (junto con el `strict` que ya estaba declarado; `strictPropertyInitialization` queda desactivado por las entidades TypeORM y los DTO). Se añade `@types/js-yaml`.
+- `UsersService.findByAuthUserId` devuelve `null` cuando el usuario no tiene perfil (antes devolvía `{ provider }`), de acuerdo con el contrato `UserProfile | null` que ya declaraba `GET /users/profile`.
+- Corregido: el nombre mostrado en Better Auth ya no incluye `null`/`undefined` cuando el perfil no tiene apellido.
+
 ### Docker
 - El `Dockerfile` ahora copia `config/authorization.yaml` a la imagen (sin él `PolicyService` no arrancaba), corre como usuario `node` (no root), define un `HEALTHCHECK` sobre `/health`, instala dependencias con `--ignore-scripts` (el `prepare` de husky rompía `npm ci --omit=dev`) y se acompaña de un `.dockerignore`.
 - `docker-compose.yml` incorpora el servicio `app` bajo el perfil opcional `app` (`docker compose --profile app up -d --build`); por defecto sigue levantando solo Postgres.
