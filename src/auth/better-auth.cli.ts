@@ -32,14 +32,14 @@ export const auth = betterAuth({
   },
 
   emailVerification: {
-    sendVerificationEmail: async ({ user, url, token }) => {},
+    sendVerificationEmail: async () => {},
   },
 
   user: {
     modelName: 'users',
     changeEmail: {
       enabled: true,
-      sendChangeEmailConfirmation: async ({ user, newEmail, url, token }, request) => {},
+      sendChangeEmailConfirmation: async () => {},
     },
   },
 
@@ -67,7 +67,7 @@ export const auth = betterAuth({
   plugins: [
     openAPI(),
     magicLink({
-      sendMagicLink: async ({ email, token, url }, ctx) => {
+      sendMagicLink: async () => {
         // send email to user
       },
     }),

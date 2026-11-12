@@ -1,7 +1,7 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ApiResponse, ApiSuccess, ApiError, ApiFail } from '@/shared/interfaces/api-response';
+import { ApiResponse, ApiSuccess } from '@/shared/interfaces/api-response';
 
 @Injectable()
 export class ResponseInterceptor<T> implements NestInterceptor<T, ApiResponse<T>> {

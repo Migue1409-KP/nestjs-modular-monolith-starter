@@ -77,7 +77,7 @@ export class AuthConfigFactory {
         modelName: 'users',
         changeEmail: {
           enabled: true,
-          sendChangeEmailConfirmation: async ({ user, newEmail, url, token }, request) => {
+          sendChangeEmailConfirmation: async ({ user, newEmail, url, token }) => {
             await this.mailService.notify({
               email: user.email,
               templateCode: 'CHANGE_EMAIL',
@@ -145,7 +145,7 @@ export class AuthConfigFactory {
           };
         }),
         magicLink({
-          sendMagicLink: async ({ email, token, url }, ctx) => {
+          sendMagicLink: async ({ email, token, url }) => {
             await this.mailService.notify({
               email: email,
               templateCode: 'MAGIC_LINK',

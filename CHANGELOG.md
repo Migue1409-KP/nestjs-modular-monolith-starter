@@ -10,6 +10,10 @@ y versionado según [SemVer](https://semver.org/lang/es/), derivado de los tipos
 - Google OAuth ya no pide por defecto scopes sensibles (género, cumpleaños, direcciones) ni acceso `offline`, y deja de registrar el perfil completo en los logs. Los scopes extra son opt-in con `GOOGLE_SCOPES`.
 - Las plantillas de notificación reemplazan los placeholders en una sola pasada (sin `RegExp` con claves sin escapar) y escapan HTML en los valores de los cuerpos HTML, evitando inyección de marcado en los correos.
 
+### Tooling
+- ESLint 8 + typescript-eslint 6 pasan a ESLint 9 + typescript-eslint 8 con flat config (`eslint.config.mjs`, reemplaza al `.eslintrc.js` deprecado). El repo queda sin warnings.
+- `npm run lint` ya no usa `--fix` y falla con cualquier warning (apto para CI); la autocorrección está en `npm run lint:fix`. Nuevo `npm run typecheck`.
+
 ### TypeScript
 - Se activan `strictNullChecks` y `noImplicitAny` (junto con el `strict` que ya estaba declarado; `strictPropertyInitialization` queda desactivado por las entidades TypeORM y los DTO). Se añade `@types/js-yaml`.
 - `UsersService.findByAuthUserId` devuelve `null` cuando el usuario no tiene perfil (antes devolvía `{ provider }`), de acuerdo con el contrato `UserProfile | null` que ya declaraba `GET /users/profile`.

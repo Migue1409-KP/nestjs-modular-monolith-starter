@@ -114,7 +114,7 @@ En Scalar puedes probar las peticiones directamente (*Test Request*). Para las r
 |---|---|
 | `npm run start:dev` | Servidor en modo watch |
 | `npm run build` / `npm run start:prod` | Compilar y ejecutar `dist/` |
-| `npm run lint` · `npm run format` | ESLint (con `--fix`) y Prettier |
+| `npm run lint` · `npm run lint:fix` · `npm run typecheck` · `npm run format` | ESLint (sin `--fix`, falla con warnings), ESLint con autocorrección, `tsc --noEmit` y Prettier |
 | `npm test` · `test:watch` · `test:cov` · `test:e2e` | Tests unitarios, cobertura y e2e |
 | `npm run auth:generate` · `auth:migrate` | Esquema de Better Auth |
 | `npm run migration:generate` · `migration:run` · `migration:revert` | Migraciones TypeORM |
