@@ -10,6 +10,10 @@ y versionado según [SemVer](https://semver.org/lang/es/), derivado de los tipos
 - Google OAuth ya no pide por defecto scopes sensibles (género, cumpleaños, direcciones) ni acceso `offline`, y deja de registrar el perfil completo en los logs. Los scopes extra son opt-in con `GOOGLE_SCOPES`.
 - Las plantillas de notificación reemplazan los placeholders en una sola pasada (sin `RegExp` con claves sin escapar) y escapan HTML en los valores de los cuerpos HTML, evitando inyección de marcado en los correos.
 
+### Tests
+- Tests unitarios nuevos para `NotificationService`, el render de plantillas, `SesMailProvider`, `StorageService`, `CloudflareR2Provider`, los repositorios (usuarios, idiomas, notificaciones, plantillas y traducciones), `LoggingInterceptor`, `RequestIdInterceptor`, `@Transactional`, `ParametersService`, `StorageController`, `AuthController` y `getDatabaseConfig`: de 70 a 199 tests y cobertura global ~90 % (antes ~44 %).
+- Umbrales de cobertura: de 25/20/15/24 % a 80/65/70/80 % (statements/branches/functions/lines). Se excluyen de la medición los archivos de cableado o arranque (módulos, `main.ts`, migraciones, seeders, `data-source.ts`, `better-auth.cli.ts`).
+
 ### Tooling
 - ESLint 8 + typescript-eslint 6 pasan a ESLint 9 + typescript-eslint 8 con flat config (`eslint.config.mjs`, reemplaza al `.eslintrc.js` deprecado). El repo queda sin warnings.
 - `npm run lint` ya no usa `--fix` y falla con cualquier warning (apto para CI); la autocorrección está en `npm run lint:fix`. Nuevo `npm run typecheck`.

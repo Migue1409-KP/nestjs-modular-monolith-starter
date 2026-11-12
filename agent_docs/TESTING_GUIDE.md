@@ -32,7 +32,7 @@ Testing strategy and expectations for this NestJS backend.
 
 - `npm test` – run all unit tests.
 - `npm run test:watch` – watch mode.
-- `npm run test:cov` – coverage (global thresholds in `package.json`: statements 25, branches 20, functions 15, lines 24).
+- `npm run test:cov` – coverage (global thresholds in `package.json`: statements 80, branches 65, functions 70, lines 80; modules, `main.ts`, migrations, seeders, `data-source.ts` and `better-auth.cli.ts` are excluded as pure wiring/bootstrap).
 - `npm run test:e2e` – e2e suite (`test/jest-e2e.json`); uses a stub module, no real DB or auth.
 - The `pre-commit` Husky hook runs `jest --passWithNoTests --bail`, so failing tests block commits.
 

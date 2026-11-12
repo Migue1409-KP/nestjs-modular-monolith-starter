@@ -125,7 +125,13 @@
       "^@/(.*)$": "<rootDir>/$1"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.(t|j)s",
+      "!main.ts",
+      "!**/*.module.ts",
+      "!auth/better-auth.cli.ts",
+      "!core/database/data-source.ts",
+      "!core/database/migrations/**",
+      "!core/database/seeders/**"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
@@ -134,10 +140,10 @@
     ],
     "coverageThreshold": {
       "global": {
-        "statements": 25,
-        "branches": 20,
-        "functions": 15,
-        "lines": 24
+        "statements": 80,
+        "branches": 65,
+        "functions": 70,
+        "lines": 80
       }
     }
   },
