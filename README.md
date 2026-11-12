@@ -79,6 +79,7 @@ Las completas en `.env` (plantilla en [`.env.example`](./.env.example)).
 | `BETTER_AUTH_URL` | *Opcional.* Origen público sin ruta (por defecto `HOST:PORT`); necesario tras un proxy con TLS |
 | `MAGIC_LINK_TOKEN_LENGTH`, `MAGIC_LINK_SECRET` | Generación de tokens del magic link |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Login con Google |
+| `GOOGLE_SCOPES` | *Opcional.* Scopes extra de Google separados por coma; por defecto solo `openid`, `email` y `profile` |
 | `API_KEY` | Clave exigida en el header `api-key` por el guard global |
 | `FRONTEND_URL` | Origen(es) del frontend, separados por coma (CORS y orígenes confiables) |
 | `COOKIE_CROSS_SITE`, `DOMAIN` | `true` si el frontend vive en otro sitio; `DOMAIN` habilita cookies entre subdominios |
