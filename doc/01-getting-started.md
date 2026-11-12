@@ -59,11 +59,8 @@ npm run seed
 
 > Para generar una nueva migración cuando cambies entidades TypeORM:
 > ```bash
-> # Linux/Mac/Git Bash
-> npm run migration:generate --name=NombreDeCambio
->
-> # Windows (cmd)
-> set npm_config_name=NombreDeCambio && npm run migration:generate
+> # Funciona igual en Linux, macOS y Windows (PowerShell/cmd)
+> npm run migration:generate -- src/core/database/migrations/NombreDeCambio
 > ```
 
 ## 6. Levantar Aplicación

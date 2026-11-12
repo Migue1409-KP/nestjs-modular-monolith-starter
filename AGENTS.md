@@ -47,7 +47,7 @@ See `agent_docs/FEATURE_WORKFLOW.md` and `agent_docs/USERS_MODULE_GUIDE.md` for 
 Preferred commands:
 
 - `npm run start:dev` – start dev server in watch mode.
-- `npm run migration:generate --name=<Name>` – generate a TypeORM migration from entity changes.
+- `npm run migration:generate -- src/core/database/migrations/<Name>` – generate a TypeORM migration from entity changes.
 - `npm run migration:run` – apply TypeORM migrations.
 - `npm run auth:migrate` – apply BetterAuth schema changes (`auth:generate` regenerates the schema).
 - `npm run seed` – load languages and notification templates.

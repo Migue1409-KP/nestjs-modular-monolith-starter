@@ -409,7 +409,7 @@ SKILL (Phase 3-4):
 ✅ All validations passed
 
 🔄 Next Steps:
-1. npm run migration:generate -- CreateRoomsTable
+1. npm run migration:generate -- src/core/database/migrations/CreateRoomsTable
 2. npm run migration:run
 3. npm test -- src/rooms
 4. npm run start:dev

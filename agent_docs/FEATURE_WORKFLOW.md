@@ -49,7 +49,7 @@ Standard workflow for adding a new feature or domain module to the NestJS backen
 
 6. **Module, migration & seed**
    - Register entity (`TypeOrmModule.forFeature`), repository, service and controller in `src/<feature>/<feature>.module.ts` and import it in `AppModule`.
-   - Generate a migration for schema changes (`npm run migration:generate --name=...`, then `npm run migration:run`).
+   - Generate a migration for schema changes (`npm run migration:generate -- src/core/database/migrations/<Name>`, then `npm run migration:run`).
    - Add idempotent seeders in `src/core/database/seeders/` when base data is needed.
 
 7. **Tests**

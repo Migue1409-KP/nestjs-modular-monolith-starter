@@ -62,7 +62,7 @@ npm run start:dev
 
 La API queda en `http://localhost:3000/api/v1` y la documentación en `http://localhost:3000/api/v1/docs`.
 
-> Si cambias el esquema de Better Auth (plugins, campos), vuelve a ejecutar `npm run auth:generate` y `npm run auth:migrate`. Para cambios en entidades TypeORM: `npm run migration:generate --name=DescripcionDelCambio` y `npm run migration:run`.
+> Si cambias el esquema de Better Auth (plugins, campos), vuelve a ejecutar `npm run auth:generate` y `npm run auth:migrate`. Para cambios en entidades TypeORM: `npm run migration:generate -- src/core/database/migrations/DescripcionDelCambio` y `npm run migration:run`.
 
 ## Variables de entorno
 
