@@ -9,6 +9,7 @@ import { ProblemDetailsFilter } from './shared/filters/problem-details.filter';
 import { RequestIdInterceptor } from './shared/interceptors/request-id.interceptor';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ApiKeyGuard } from './shared/guards/api-key.guard';
+import type { Request, Response } from 'express';
 import { apiReference } from '@scalar/nestjs-api-reference';
 import { parseFrontendUrls } from './shared/utils/frontend-url.util';
 import { mergeAuthOpenApi } from './shared/utils/merge-auth-openapi.util';
@@ -112,13 +113,13 @@ async function bootstrap() {
     fs.writeFileSync('./openapi.json', JSON.stringify(document, null, 2));
     fs.writeFileSync('./openapi.yaml', yaml.dump(document));
 
-    app.use(`/${apiPrefix}/download/openapi.json`, (_req, res) => {
+    app.use(`/${apiPrefix}/download/openapi.json`, (_req: Request, res: Response) => {
       res.setHeader('Content-Type', 'application/json');
       res.setHeader('Content-Disposition', 'attachment; filename="openapi.json"');
       res.sendFile('openapi.json', { root: process.cwd() });
     });
 
-    app.use(`/${apiPrefix}/download/openapi.yaml`, (_req, res) => {
+    app.use(`/${apiPrefix}/download/openapi.yaml`, (_req: Request, res: Response) => {
       res.setHeader('Content-Type', 'application/yaml');
       res.setHeader('Content-Disposition', 'attachment; filename="openapi.yaml"');
       res.sendFile('openapi.yaml', { root: process.cwd() });

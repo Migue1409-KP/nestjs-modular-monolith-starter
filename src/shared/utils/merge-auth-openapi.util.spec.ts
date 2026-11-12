@@ -35,10 +35,10 @@ describe('mergeAuthOpenApi', () => {
 
   it('prefixes tags, keeps descriptions and inherits the default security', () => {
     const doc = mergeAuthOpenApi(nestDocument(), authSchema, 'api/v1/auth');
-    const op = doc.paths['/api/v1/auth/sign-in/email'].post;
+    const op = doc.paths['/api/v1/auth/sign-in/email'].post!;
     expect(op.tags).toEqual(['Better Auth - Default']);
     expect(op.security).toEqual([{ apiKeyCookie: [] }]);
-    expect(doc.paths['/api/v1/auth/magic-link/verify'].get.security).toEqual([]);
+    expect(doc.paths['/api/v1/auth/magic-link/verify'].get!.security).toEqual([]);
     expect(doc.tags).toContainEqual({
       name: 'Better Auth - Default',
       description: 'Core endpoints',
@@ -47,9 +47,9 @@ describe('mergeAuthOpenApi', () => {
 
   it('merges components without overriding Nest entries', () => {
     const doc = mergeAuthOpenApi(nestDocument(), authSchema, 'api/v1/auth');
-    expect(doc.components.schemas.User).toEqual({ type: 'object' });
-    expect(doc.components.schemas.Session).toBeDefined();
-    expect(Object.keys(doc.components.securitySchemes)).toEqual(
+    expect(doc.components!.schemas!.User).toEqual({ type: 'object' });
+    expect(doc.components!.schemas!.Session).toBeDefined();
+    expect(Object.keys(doc.components!.securitySchemes!)).toEqual(
       expect.arrayContaining(['cookieAuth', 'apiKeyCookie']),
     );
   });

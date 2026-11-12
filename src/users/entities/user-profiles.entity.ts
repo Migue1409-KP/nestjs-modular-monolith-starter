@@ -27,7 +27,7 @@ export class UserProfile {
   name!: string;
 
   @Column({ type: 'varchar', nullable: true, name: 'last_name' })
-  lastname!: string;
+  lastname!: string | null;
 
   @Column({
     type: 'text',
