@@ -7,6 +7,8 @@ import { NotificationTemplateTranslation } from './entities/notifcation-template
 import { NotificationTemplateTranslationsRepository } from './repositories/notification-template-translations.repository';
 import { NotificationService } from './notification.service';
 import { Notification } from './entities/notifications.entity';
+import { MAIL_PROVIDER } from './interfaces/mail-provider.interface';
+import { SesMailProvider } from './providers/ses-mail.provider';
 
 @Module({
   imports: [
@@ -14,6 +16,7 @@ import { Notification } from './entities/notifications.entity';
   ],
   providers: [
     NotificationService,
+    { provide: MAIL_PROVIDER, useClass: SesMailProvider },
     NotificationsRepository,
     NotificationTemplatesRepository,
     NotificationTemplateTranslationsRepository,

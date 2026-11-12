@@ -6,6 +6,9 @@ y versionado según [SemVer](https://semver.org/lang/es/), derivado de los tipos
 
 ## [Sin publicar]
 
+### Seguridad
+- Las plantillas de notificación reemplazan los placeholders en una sola pasada (sin `RegExp` con claves sin escapar) y escapan HTML en los valores de los cuerpos HTML, evitando inyección de marcado en los correos.
+
 ### Eliminado
 - Código muerto: `AuthService` local (stubs `afterSignUp`, `getUserProfileByGoogleId` y `handleAuthError`), `ActiveSubscriptionInterceptor`, los DTO `login`/`register` sin uso y el `.gitkeep` de la raíz.
 - `skills-lock.json` y los skills personales `better-auth-best-practices` y `nestjs-expert` salen del control de versiones (siguen en `.gitignore`); `create-feature` se mantiene.
@@ -13,6 +16,8 @@ y versionado según [SemVer](https://semver.org/lang/es/), derivado de los tipos
 - Endpoint de prueba `GET /parameters/test`.
 
 ### Cambiado
+- Notificaciones: el envío por SES vive detrás de la interfaz `IMailProvider` (token `MAIL_PROVIDER`, implementación `SesMailProvider`), igual que storage. `NotificationService` ya no conoce SES ni duplica `handleAuthError`, y se eliminó el `initializeDefaultParams` vacío.
+- Los correos de Better Auth (magic link, cambio de email) se entregan en segundo plano con `NotificationService.notify`: si SES falla, el flujo de auth no falla; la notificación queda `FAILED` y se reintenta desde el módulo admin.
 - ⚠️ La migración inicial `$npmConfigName1778862199075` pasa a llamarse `InitialSchema1778862199075` (archivo, clase y `name`). Las bases de datos ya migradas deben actualizar el registro: `UPDATE migrations SET name = 'InitialSchema1778862199075' WHERE name = ' $npmConfigName1778862199075';` (o recrearse si no importa su contenido).
 - `migration:generate` ahora recibe la ruta como argumento y funciona igual en Windows, macOS y Linux: `npm run migration:generate -- src/core/database/migrations/Nombre`.
 - El `name` de `package.json` pasa a `nestjs-modular-monolith-starter`.
