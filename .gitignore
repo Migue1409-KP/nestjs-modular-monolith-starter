@@ -150,3 +150,8 @@ openapi.json
 
 # Staging env
 .env.staging
+
+# Personal agent skills (installed locally, not part of the starter)
+skills-lock.json
+.claude/skills/better-auth-best-practices/
+.claude/skills/nestjs-expert/

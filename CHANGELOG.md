@@ -7,10 +7,15 @@ y versionado según [SemVer](https://semver.org/lang/es/), derivado de los tipos
 ## [Sin publicar]
 
 ### Eliminado
+- Código muerto: `AuthService` local (stubs `afterSignUp`, `getUserProfileByGoogleId` y `handleAuthError`), `ActiveSubscriptionInterceptor`, los DTO `login`/`register` sin uso y el `.gitkeep` de la raíz.
+- `skills-lock.json` y los skills personales `better-auth-best-practices` y `nestjs-expert` salen del control de versiones (siguen en `.gitignore`); `create-feature` se mantiene.
 - Plugin `emailOTP` de Better Auth (nunca envió códigos: `sendVerificationOTP` estaba vacío) y sus endpoints `/auth/email-otp/*`.
 - Endpoint de prueba `GET /parameters/test`.
 
 ### Cambiado
+- ⚠️ La migración inicial `$npmConfigName1778862199075` pasa a llamarse `InitialSchema1778862199075` (archivo, clase y `name`). Las bases de datos ya migradas deben actualizar el registro: `UPDATE migrations SET name = 'InitialSchema1778862199075' WHERE name = ' $npmConfigName1778862199075';` (o recrearse si no importa su contenido).
+- `migration:generate` ahora recibe la ruta como argumento y funciona igual en Windows, macOS y Linux: `npm run migration:generate -- src/core/database/migrations/Nombre`.
+- El `name` de `package.json` pasa a `nestjs-modular-monolith-starter`.
 - Documentación alineada con el código: `doc/`, `agent_docs/`, `AGENTS.md` y el README de seeders describen ahora la autorización RBAC (`PolicyGuard`, `config/authorization.yaml`), el pipeline real de guards/interceptores, las variables `DB_*` vigentes (sin `DB_SYNCHRONIZE`), el flujo `auth:migrate` → `migration:run` → `seed` y Scalar en `/api/v1/docs`.
 - El README de seeders ya no hace referencia a seeders y datos de otro proyecto.
 

@@ -20,7 +20,7 @@ npm run seed
 npm run start:dev
 ```
 
-> **Nota:** Los pasos 1 a 3 son obligatorios al arrancar el proyecto por primera vez. `npm run auth:generate` (regenera el esquema de Better Auth) solo hace falta si cambias sus plugins o campos, y `npm run migration:generate --name=DescripcionDelCambio` solo cuando modificas entidades TypeORM.
+> **Nota:** Los pasos 1 a 3 son obligatorios al arrancar el proyecto por primera vez. `npm run auth:generate` (regenera el esquema de Better Auth) solo hace falta si cambias sus plugins o campos, y `npm run migration:generate -- src/core/database/migrations/DescripcionDelCambio` solo cuando modificas entidades TypeORM.
 
 ---
 
@@ -51,11 +51,8 @@ Toda alteración de esquema relacional en entidades decoradas (modelos de negoci
 Supongamos que modificas la entidad `Language` para agregar una nueva columna llamada `codeIso`:
 
 ```bash
-# Linux/Mac/Git Bash
-npm run migration:generate --name=AddCodeIsoToLanguages
-
-# Windows (cmd)
-set npm_config_name=AddCodeIsoToLanguages && npm run migration:generate
+# Funciona igual en Linux, macOS y Windows (PowerShell/cmd)
+npm run migration:generate -- src/core/database/migrations/AddCodeIsoToLanguages
 ```
 
 El script lee `data-source.ts`, carga tus entidades y las compara con la base de datos, generando un SQL de tipo `ALTER TABLE`.

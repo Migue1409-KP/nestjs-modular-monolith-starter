@@ -59,7 +59,7 @@ export class Product {
 }
 ```
 
-No hace falta registrarla en el DataSource: se descubre por el patrón `**/*.entity.ts` (nombra el archivo `product.entity.ts`). Sí debes declararla en el módulo con `TypeOrmModule.forFeature([Product])`. Después genera y aplica la migración (`npm run migration:generate --name=AddProducts` y `npm run migration:run`).
+No hace falta registrarla en el DataSource: se descubre por el patrón `**/*.entity.ts` (nombra el archivo `product.entity.ts`). Sí debes declararla en el módulo con `TypeOrmModule.forFeature([Product])`. Después genera y aplica la migración (`npm run migration:generate -- src/core/database/migrations/AddProducts` y `npm run migration:run`).
 
 ### 4. Controlador y Servicio
 
