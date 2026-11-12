@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiSecurity } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiSuccess } from '@/shared/interfaces/api-response';
 import { ParametersService } from './parameters.service';
 import { Language } from './entities/languages.entity';

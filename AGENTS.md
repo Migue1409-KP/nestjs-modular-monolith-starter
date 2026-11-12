@@ -52,7 +52,7 @@ Preferred commands:
 - `npm run auth:migrate` – apply BetterAuth schema changes (`auth:generate` regenerates the schema).
 - `npm run seed` – load languages and notification templates.
 - `npm test` – run unit tests (`test:cov` for coverage, `test:e2e` for e2e; the real-app e2e needs a disposable Postgres with the schema applied via `DATABASE_URL`/`DB_*`, it never runs against `synchronize` and is skipped without `DATABASE_URL`).
-- `npm run lint` – ESLint (runs with `--fix`); `npm run build` – compile.
+- `npm run lint` – ESLint (read-only, zero warnings; use `npm run lint:fix` to autofix), `npm run typecheck`; `npm run build` – compile.
 
 Agents SHOULD reason about which commands to run after changes.
 

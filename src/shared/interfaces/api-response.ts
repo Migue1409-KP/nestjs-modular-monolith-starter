@@ -20,7 +20,7 @@ export interface OffsetPaginationMeta extends BaseMeta {
   pageSize: number;
   pageCount: number;
 }
-export interface OffsetPaginationLinks extends TopLevelLinks {}
+export type OffsetPaginationLinks = TopLevelLinks;
 
 // Paginación CURSOR
 export interface CursorPaginationMeta extends BaseMeta {
@@ -30,7 +30,7 @@ export interface CursorPaginationMeta extends BaseMeta {
   hasNextPage: boolean;
   hasPreviousPage: boolean;
 }
-export interface CursorPaginationLinks extends TopLevelLinks {}
+export type CursorPaginationLinks = TopLevelLinks;
 
 /** -------------------------------
  *  RFC 9457 Problem Details
