@@ -3,6 +3,7 @@ import { Pool } from 'pg';
 import * as dotenv from 'dotenv';
 import { magicLink, openAPI } from 'better-auth/plugins';
 import { parseFrontendUrls } from '../shared/utils/frontend-url.util';
+import { parseGoogleScopes } from './google-scopes.util';
 
 // Cargar variables de entorno manualmente
 dotenv.config();
@@ -58,14 +59,8 @@ export const auth = betterAuth({
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      prompt: 'select_account consent',
-      accessType: 'offline',
-      scope: [
-        'https://www.googleapis.com/auth/user.gender.read',
-        'https://www.googleapis.com/auth/user.birthday.read',
-        'https://www.googleapis.com/auth/user.addresses.read',
-        'https://www.googleapis.com/auth/profile.language.read',
-      ],
+      prompt: 'select_account',
+      scope: parseGoogleScopes(process.env.GOOGLE_SCOPES),
     },
   },
 

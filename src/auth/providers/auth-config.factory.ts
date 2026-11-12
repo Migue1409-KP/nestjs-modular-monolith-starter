@@ -6,6 +6,7 @@ import { UsersService } from '@/users/services/users.service';
 import { ConfigService } from '@nestjs/config';
 import { NotificationService } from '@/core/notification/notification.service';
 import { parseFrontendUrls } from '@/shared/utils/frontend-url.util';
+import { parseGoogleScopes } from '@/auth/google-scopes.util';
 import * as crypto from 'crypto';
 
 @Injectable()
@@ -37,6 +38,8 @@ export class AuthConfigFactory {
     const magicLinkTokenLength = Number(
       this.configService.get<number>('MAGIC_LINK_TOKEN_LENGTH', 32),
     );
+
+    const googleScopes = parseGoogleScopes(this.configService.get<string>('GOOGLE_SCOPES'));
 
     return betterAuth({
       baseURL: this.resolveBaseUrl(),
@@ -104,18 +107,9 @@ export class AuthConfigFactory {
         google: {
           clientId: this.configService.get<string>('GOOGLE_CLIENT_ID')!,
           clientSecret: this.configService.get<string>('GOOGLE_CLIENT_SECRET')!,
-          prompt: 'select_account consent',
-          accessType: 'offline',
-          scope: [
-            'https://www.googleapis.com/auth/user.gender.read',
-            'https://www.googleapis.com/auth/user.birthday.read',
-            'https://www.googleapis.com/auth/user.addresses.read',
-            'https://www.googleapis.com/auth/profile.language.read',
-          ],
-          mapProfileToUser: (profile) => {
-            this.logger.log('Google profile data:', profile);
-            return { ...profile };
-          },
+          prompt: 'select_account',
+          // Only the basic scopes by default; sensitive ones are opt-in via GOOGLE_SCOPES.
+          scope: googleScopes,
         },
       },
 

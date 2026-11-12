@@ -7,6 +7,7 @@ y versionado según [SemVer](https://semver.org/lang/es/), derivado de los tipos
 ## [Sin publicar]
 
 ### Seguridad
+- Google OAuth ya no pide por defecto scopes sensibles (género, cumpleaños, direcciones) ni acceso `offline`, y deja de registrar el perfil completo en los logs. Los scopes extra son opt-in con `GOOGLE_SCOPES`.
 - Las plantillas de notificación reemplazan los placeholders en una sola pasada (sin `RegExp` con claves sin escapar) y escapan HTML en los valores de los cuerpos HTML, evitando inyección de marcado en los correos.
 
 ### Eliminado

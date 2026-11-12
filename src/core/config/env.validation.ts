@@ -67,6 +67,8 @@ const baseSchema = z.object({
 
   GOOGLE_CLIENT_ID: optionalString,
   GOOGLE_CLIENT_SECRET: optionalString,
+  // Extra OAuth scopes (comma separated); none by default.
+  GOOGLE_SCOPES: optionalString,
 
   AWS_REGION: optionalString,
   AWS_ACCESS_KEY_ID: optionalString,
