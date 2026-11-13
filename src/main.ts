@@ -16,6 +16,7 @@ import { mergeAuthOpenApi } from './shared/utils/merge-auth-openapi.util';
 import { AuthService } from '@thallesp/nestjs-better-auth';
 import { createSecurityHeadersMiddleware } from './shared/utils/security-headers.util';
 import { parseTrustProxy } from './shared/utils/trust-proxy.util';
+import { getAppVersion } from './shared/utils/app-version.util';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 
@@ -72,7 +73,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('NestJS Modular Monolith API')
     .setDescription('API documentation — generated automatically from OpenAPI decorators')
-    .setVersion('1.0')
+    .setVersion(getAppVersion())
     .addCookieAuth(
       'better-auth.session_token', // nombre de la cookie
       {
