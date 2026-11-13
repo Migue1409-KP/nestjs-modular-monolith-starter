@@ -34,20 +34,6 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-    # Dummy values only: nothing here is a real secret. The e2e suite pins the rest in test/e2e-setup.ts.
-    env:
-      NODE_ENV: development
-      DB_HOST: localhost
-      DB_PORT: 5432
-      DB_USERNAME: postgres
-      DB_PASSWORD: secret
-      DB_NAME: nestjs_template
-      DATABASE_URL: postgresql://postgres:secret@localhost:5432/nestjs_template
-      BETTER_AUTH_SECRET: ci-better-auth-secret-0123456789abcdef
-      MAGIC_LINK_SECRET: ci-magic-link-secret-0123456789abcdef
-      API_KEY: ci-api-key-0123456789
-      FRONTEND_URL: http://localhost:3001
-
     steps:
       - uses: actions/checkout@v4
 
@@ -69,6 +55,25 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      # Dummy values only (nothing here is a real secret). Exported after the unit tests on purpose:
+      # some specs assert that a missing secret throws, and ConfigService also reads process.env.
+      # The e2e suite pins the rest in test/e2e-setup.ts.
+      - name: Export test environment
+        run: |
+          {
+            echo "NODE_ENV=development"
+            echo "DB_HOST=localhost"
+            echo "DB_PORT=5432"
+            echo "DB_USERNAME=postgres"
+            echo "DB_PASSWORD=secret"
+            echo "DB_NAME=nestjs_template"
+            echo "DATABASE_URL=postgresql://postgres:secret@localhost:5432/nestjs_template"
+            echo "BETTER_AUTH_SECRET=ci-better-auth-secret-0123456789abcdef"
+            echo "MAGIC_LINK_SECRET=ci-magic-link-secret-0123456789abcdef"
+            echo "API_KEY=ci-api-key-0123456789"
+            echo "FRONTEND_URL=http://localhost:3001"
+          } >> "$GITHUB_ENV"
 
       - name: Prepare database (Better Auth + TypeORM migrations + seeds)
         run: |
