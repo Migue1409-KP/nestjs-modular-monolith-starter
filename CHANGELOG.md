@@ -4,6 +4,48 @@ Todos los cambios relevantes del proyecto. Formato basado en [Keep a Changelog](
 y versionado según [SemVer](https://semver.org/lang/es/), derivado de los tipos de commit
 ([Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/)).
 
+## [1.1.0](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/compare/nestjs-modular-monolith-starter-v1.0.1...nestjs-modular-monolith-starter-v1.1.0) (2026-11-13)
+
+
+### Features
+
+* add Jest manual mock for thallesp/nestjs-better-auth to support testing with ESM-only packages ([fa5cf27](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/fa5cf272da80a0998a99360888833b21a750eaca))
+* **api:** add error handling decorators, validation filters, active subscription interceptor, and configuration improvements ([4c818dd](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/4c818dddb7678e52c1bd677be470def07194b60c))
+* **config:** add ESLint and Prettier configuration files, update package.json scripts, and remove unused dependencies ([92b7bde](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/92b7bde412e1e7f5c578002c211b47d865ad16ea))
+* **config:** support multiple frontend origins and opt-in cross-site cookies ([54959b3](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/54959b3ad628784515bafa21f5ca99926f02e1da))
+* **database:** refactor database configuration to use environment variables and add seeders for languages and countries ([54daea6](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/54daea6c6dc402d107d41d12eb219299730d05d6))
+* **db:** use timestamptz columns and add native name and active flag to languages ([514e7dc](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/514e7dc91809a5229b8384a46f3171f97c5ea458))
+* **docker:** agregar Dockerfile y docker-compose.yml para la configuración del entorno de desarrollo ([0fd4da5](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/0fd4da5e2e88c3782520dc6447cb6ed0df3f6d6d))
+* **docs:** actualizar instrucciones en README para incluir la aplicación de seeders antes de arrancar la aplicación ([5920f76](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/5920f7653f7e290effc89be8ae06252e0d0b1672))
+* **docs:** add comprehensive documentation for project setup, architecture, authentication, database migrations, and seeders ([4935b0c](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/4935b0cd659c0eaa1c306afb1dda98aecd99c417))
+* **docs:** add documentation for agents, exploration guides, and feature workflow ([2b09b08](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/2b09b08d3f4f6f6e45e778dfc5a55921f378488f))
+* **docs:** include Better Auth endpoints in the Scalar API reference ([bb02998](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/bb02998e265b563ec2fd38a01b261470b2cebe54))
+* **docs:** read OpenAPI version from package.json ([48132e4](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/48132e4a824ae46891c526948bcb87db86246283))
+* **docs:** replace swagger-ui with scalar API reference and add ApiSuccessResponse ([50faccf](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/50faccf66b900071bbb88961a3da5f55bff4cf29))
+* **health:** add health check module with database connectivity probe ([8de0979](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/8de0979e87661898cab2c591f28c837a5aa21280))
+* integrate policy-based authorization system ([753d0c8](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/753d0c8b6c734a9ed3973b659702d25043fa4e0a))
+* **notification:** add unique constraint for template and language in translations ([0f12565](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/0f12565fc0d01411442eec226d43433e73f1c515))
+* **notifications:** add admin module to manage notifications ([fb3d56c](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/fb3d56c9f9121a256522fc948f2945bce24c8edb))
+* **notifications:** seed MAGIC_LINK and CHANGE_EMAIL templates ([b521dc9](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/b521dc9aad7c42ba180e658ac33793df3adde27b))
+* **security:** add helmet, rate limiting and shutdown hooks ([019c984](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/019c984c7585f7a0d7e150d91bf0e7f88227003e))
+* **skills:** add Nest.js feature templates for CRUD operations ([bda81a5](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/bda81a5e07ee81b3ef53e560c87a6a4ced09e38e))
+* **storage:** implement Cloudflare R2 storage provider with presigned URLs ([cf9ebcd](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/cf9ebcda2f9e52bf7d49606e72d8c6b68b07c46f))
+* **tests:** agregar pruebas unitarias y de integración para filtros, interceptores y pipes ([77f4fec](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/77f4fec5541279f883b706d03c4cee522f2b207f))
+* **users:** enhance user profile management with language support and improved error handling ([1bcc0f0](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/1bcc0f0f640bce151ec0c65a60e4d9b0eb0bf1fd))
+
+
+### Bug Fixes
+
+* **auth:** remove insecure secret fallbacks ([6528391](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/6528391cfa59b58ddd1a34207dbf9c4470098feb))
+* **auth:** request minimal Google scopes and stop logging profiles ([b836d75](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/b836d750d08eefe012f85b0e46b0ce2a2d0699c9))
+* **config:** validate environment variables at startup ([e242013](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/e242013d0fe869435e89287f8eec63887762b418))
+* **db:** verify the database TLS certificate by default ([05d3eeb](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/05d3eeb2599f399190e8cb6ded83aebccf181e58))
+* **security:** compare API key in constant time ([6b65568](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/6b65568a8a2d68315e47a93f83d265e511e123ee))
+* **security:** hide internal error details in production and honor class-level @Public ([b3f8d35](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/b3f8d358fbec726c764dfbd7e27c18cf2a6fefe1))
+* **storage:** use namespace import for dayjs ([f800b93](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/f800b93101f8df69fdd41d02ae6383eda350472e))
+* **users:** enforce profile ownership on GET/PATCH /users/profile/:id ([eb70649](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/eb706491fbcc3f5ac0bbf498f595ae67f21dd04a))
+* **users:** take authUserId from the session and return 409 on duplicate profile ([3c9c5c0](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/3c9c5c006bc7748e63b24550dce43edd2642c14a))
+
 ## [Sin publicar]
 
 ### Documentación
