@@ -56,12 +56,12 @@ Más detalle en [`doc/01-getting-started.md`](./doc/01-getting-started.md) y [`d
 - [ ] El código compila (`npm run build`) y pasa lint y tests.
 - [ ] Añadí/actualicé tests y documentación.
 - [ ] Incluí migración y/o seeder si cambié el esquema.
-- [ ] Actualicé `CHANGELOG.md` (sección *Sin publicar*) si el cambio es visible para usuarios.
+- [ ] El título del PR / los commits siguen Conventional Commits: el `CHANGELOG.md` lo genera release-please, no lo edites a mano.
 - [ ] Los commits siguen Conventional Commits.
 
 ## Versionado
 
-Usamos [SemVer](https://semver.org/lang/es/) derivado de los tipos de commit: `fix` → patch, `feat` → minor y `BREAKING CHANGE` (o `!`) → major. Las versiones se publican como tags `vX.Y.Z` con su release en GitHub.
+Usamos [SemVer](https://semver.org/lang/es/) derivado de los tipos de commit: `fix` → patch, `feat` → minor y `BREAKING CHANGE` (o `!`) → major. Las versiones las automatiza [release-please](https://github.com/googleapis/release-please): un PR de release abierto por el bot sube la versión y actualiza `CHANGELOG.md`; al fusionarlo se crean el tag `vX.Y.Z` y el release en GitHub.
 
 ## Licencia
 
