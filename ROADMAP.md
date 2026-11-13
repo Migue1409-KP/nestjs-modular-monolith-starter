@@ -13,7 +13,8 @@ Análisis hecho el 2026-10-23 sobre la versión 1.0.1. Se revisaron la estructur
 
 - ✅ **P0 (seguridad y correctitud):** completado (secretos sin fallback, validación de entorno, auditoría de dependencias, `ApiKeyGuard` en tiempo constante, helmet/throttler/shutdown hooks, TLS de BD verificado, e2e contra la app real).
 - ✅ **P1 (calidad y DX):** completado el 2026-11-12 (ver detalle abajo).
-- ⏳ Pendiente: P2 y las versiones v1.1 en adelante (CI, documentación en inglés, etc.).
+- ✅ **P2 (documentación y comunidad):** completado el 2026-11-12 (ver detalle abajo).
+- ⏳ Pendiente: las versiones v1.1 en adelante (resolver `npm audit`, configurar el repo en GitHub, etc.).
 
 ## Hallazgos por prioridad
 
@@ -56,7 +57,9 @@ Análisis hecho el 2026-10-23 sobre la versión 1.0.1. Se revisaron la estructur
   - El `Dockerfile` corre como root, sin `HEALTHCHECK` ni `.dockerignore`.
   - Hay que confirmar que `config/authorization.yaml` llega a la imagen, porque `PolicyService` lo lee en runtime.
 
-### P2: documentación y comunidad
+### P2: documentación y comunidad — ✅ completado
+
+> Resuelto: `README.en.md` y guías en inglés (`doc/en/`: despliegue y uso del template) con índice `doc/README.md`; diagramas Mermaid de arquitectura; guías de despliegue (Railway, Fly.io, VPS) y de uso del template; badge de CI con un workflow mínimo (lint, typecheck, tests, build y e2e); Dependabot y release-please; versión de OpenAPI leída de `package.json`. Pendiente manual en GitHub: activar *Template repository* y los permisos de Actions para release-please. Las guías 01-06 siguen solo en español. Los hallazgos de abajo se conservan como registro.
 
 - La documentación está en español y el código en inglés. Eso es coherente con `AGENTS.md`, pero limita el alcance open source. Haría falta un `README.en.md` o i18n básico.
 - No hay `docs/` navegable (solo 7 markdown), ni diagrama de arquitectura, ni guía de despliegue. Tampoco hay guía de "cómo usar el template" (renombrar, limpiar, eliminar módulos de ejemplo).

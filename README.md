@@ -1,5 +1,8 @@
 # NestJS Modular Monolith Starter
 
+**Español** · [English](./README.en.md)
+
+[![CI](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/actions/workflows/ci.yml)
 [![Licencia: Apache 2.0](https://img.shields.io/badge/licencia-Apache%202.0-blue.svg)](./LICENSE)
 [![Release](https://img.shields.io/github/v/release/Migue1409-KP/nestjs-modular-monolith-starter?sort=semver)](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/releases)
 [![Node](https://img.shields.io/badge/node-%E2%89%A5%2022.12-339933.svg)](https://nodejs.org)
@@ -99,7 +102,7 @@ Más detalle en [`doc/03-authentication.md`](./doc/03-authentication.md).
 
 ## Documentación de la API
 
-Con la aplicación levantada:
+Con la aplicación levantada (la `version` de OpenAPI sigue a la de `package.json`):
 
 | Recurso | URL |
 |---|---|
@@ -132,11 +135,13 @@ src/
  shared/              # Decoradores, filtros, guards, interceptores, pipes, autorización
  users/               # Dominio de ejemplo: perfiles, repositorio, servicio, controller
 config/                # Matriz de autorización (YAML)
-doc/                   # Documentación detallada (español)
+doc/                   # Documentación detallada (español; guías en inglés en doc/en)
 agent_docs/            # Guías para agentes de IA
 ```
 
 ## Documentación interna
+
+Índice completo en [`doc/README.md`](./doc/README.md) ([English](./doc/en/README.md)).
 
 - [01 - Getting Started](./doc/01-getting-started.md)
 - [02 - Arquitectura y Estructura](./doc/02-architecture-and-structure.md)
@@ -144,10 +149,12 @@ agent_docs/            # Guías para agentes de IA
 - [04 - Base de Datos y Migraciones](./doc/04-database-and-migrations.md)
 - [05 - Añadir Nuevas Funcionalidades](./doc/05-adding-new-features.md)
 - [06 - Git y Commits Semánticos](./doc/06-git-conventional-commits.md)
+- [07 - Despliegue](./doc/07-deployment.md) (Docker, Railway, Fly.io, VPS)
+- [08 - Usar este template](./doc/08-using-the-template.md) (renombrar, limpiar, quitar módulos)
 
 ## Versionado
 
-Seguimos [SemVer](https://semver.org/lang/es/). El historial de cambios está en el [CHANGELOG](./CHANGELOG.md) y las versiones publicadas en [Releases](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/releases).
+Seguimos [SemVer](https://semver.org/lang/es/) y los releases se automatizan con [release-please](https://github.com/googleapis/release-please) a partir de Conventional Commits. El historial de cambios está en el [CHANGELOG](./CHANGELOG.md) y las versiones publicadas en [Releases](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/releases).
 
 ## Contribuir
 

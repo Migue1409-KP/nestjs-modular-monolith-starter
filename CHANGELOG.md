@@ -6,6 +6,19 @@ y versionado según [SemVer](https://semver.org/lang/es/), derivado de los tipos
 
 ## [Sin publicar]
 
+### Documentación
+- `README.en.md` y `doc/en/` (índice, despliegue y uso del template) en inglés; nuevo índice `doc/README.md`.
+- Diagramas Mermaid de módulos y de ciclo de vida de una petición en `doc/02-architecture-and-structure.md`.
+- Guías `07 - Despliegue` (Docker, Railway, Fly.io, VPS, migraciones como pre-deploy) y `08 - Usar este template` (renombrar, limpiar y quitar módulos de ejemplo).
+
+### CI y automatización
+- Workflow de CI en GitHub Actions: lint, typecheck, tests con cobertura, build y e2e contra Postgres; auditoría de dependencias informativa.
+- Dependabot (npm, Docker y GitHub Actions, semanal y agrupado) y release-please para versionado, CHANGELOG, tags y releases automáticos.
+- `.nvmrc` pasa a `22.12.0` (coincide con `engines`).
+
+### API
+- La `version` del documento OpenAPI se lee de `package.json` en lugar de estar fija en `1.0`.
+
 ### Seguridad
 - Google OAuth ya no pide por defecto scopes sensibles (género, cumpleaños, direcciones) ni acceso `offline`, y deja de registrar el perfil completo en los logs. Los scopes extra son opt-in con `GOOGLE_SCOPES`.
 - Las plantillas de notificación reemplazan los placeholders en una sola pasada (sin `RegExp` con claves sin escapar) y escapan HTML en los valores de los cuerpos HTML, evitando inyección de marcado en los correos.

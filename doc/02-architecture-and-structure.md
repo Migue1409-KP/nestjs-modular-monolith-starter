@@ -37,3 +37,69 @@ Es común confundir estas dos carpetas:
 9. **`ProblemDetailsFilter`** (global): cualquier excepción se serializa como Problem Details (RFC 9457) dentro del envelope `{ status: 'error', error }` (`requestId` solo aparece si el cliente envía el header `x-request-id`).
 
 Este encapsulamiento evita "controllers gigantes" y mantiene las dependencias localizadas.
+
+## Diagramas
+
+### Vista de módulos
+
+Las flechas indican dependencia. Los módulos de dominio (`users`, `notifications`) dependen de `core`/`shared`, nunca al revés ni entre sí por detalles internos.
+
+```mermaid
+flowchart TB
+    subgraph app["AppModule"]
+        direction TB
+        subgraph domain["Dominio (feature-first)"]
+            users["users/<br/>perfiles, repositorio, servicio"]
+            notif["notifications/<br/>administración (ADMIN)"]
+        end
+        auth["auth/<br/>Better Auth + /auth/me"]
+        authz["AuthorizationModule<br/>PolicyService + authorization.yaml"]
+        subgraph core["core/ (CoreModule, global)"]
+            db["database<br/>TypeORM + migraciones"]
+            mail["notification<br/>MailProvider (SES)"]
+            storage["storage<br/>Cloudflare R2"]
+            params["parameters · health · http"]
+        end
+        shared["shared/<br/>guards · interceptores · pipes · filtros · decoradores"]
+    end
+
+    users --> db
+    notif --> mail
+    notif --> db
+    auth --> users
+    auth --> mail
+    authz --> shared
+    domain --> shared
+    core --> shared
+    db --> pg[("PostgreSQL")]
+    mail --> ses(["AWS SES"])
+    storage --> r2(["Cloudflare R2"])
+    auth --> pg
+```
+
+### Ciclo de vida de una petición
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant C as Cliente
+    participant T as ThrottlerGuard
+    participant K as ApiKeyGuard
+    participant P as PolicyGuard
+    participant I as Interceptores
+    participant Z as ZodValidationPipe
+    participant H as Controller → Service → Repository
+    participant F as ProblemDetailsFilter
+
+    C->>T: HTTP request
+    T->>K: dentro del límite de peticiones
+    K->>P: header api-key válido (o @Public)
+    P->>P: sesión Better Auth + matriz YAML (401/403)
+    P->>I: autorizado
+    I->>Z: RequestId · Logging
+    Z->>H: body validado (400 si falla)
+    H-->>I: resultado
+    I-->>C: ResponseInterceptor → { status: 'success', data }
+    H--xF: excepción
+    F-->>C: { status: 'error', error } (RFC 9457)
+```
