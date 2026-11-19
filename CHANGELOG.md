@@ -4,7 +4,7 @@ Todos los cambios relevantes del proyecto. Formato basado en [Keep a Changelog](
 y versionado según [SemVer](https://semver.org/lang/es/), derivado de los tipos de commit
 ([Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/)).
 
-## [Sin publicar]
+## Notas detalladas de 1.1.0
 
 ### Documentación
 - `README.en.md` y `doc/en/` (índice, despliegue y uso del template) en inglés; nuevo índice `doc/README.md`.
@@ -149,7 +149,6 @@ Primera versión estable. Actualización mayor de la autenticación: Better Auth
 ### Añadido
 - Plantilla inicial del monolito modular NestJS.
 
-[Sin publicar]: https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/compare/v1.0.1...HEAD
 [1.0.1]: https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/compare/v0.1.5...v1.0.0
 [0.1.5]: https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/compare/v0.1.4...v0.1.5
