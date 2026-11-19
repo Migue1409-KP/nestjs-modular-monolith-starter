@@ -17,7 +17,7 @@
 - [ ] Añadí o actualicé tests
 - [ ] Incluí migración y/o seeder si cambié el esquema
 - [ ] Las rutas nuevas están cubiertas en `config/authorization.yaml` y comprueban la propiedad del recurso si usan `:id`
-- [ ] Actualicé la documentación y el `CHANGELOG.md` (sección *Sin publicar*) si el cambio es visible
+- [ ] Actualicé la documentación si el cambio es visible (el `CHANGELOG.md` lo genera release-please a partir de los commits)
 
 ## Cómo probarlo
 
