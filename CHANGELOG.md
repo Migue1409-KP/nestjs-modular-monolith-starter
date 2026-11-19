@@ -17,7 +17,6 @@ y versionado según [SemVer](https://semver.org/lang/es/), derivado de los tipos
 
 * **auth:** remove insecure secret fallbacks ([6528391](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/6528391cfa59b58ddd1a34207dbf9c4470098feb))
 * **auth:** request minimal Google scopes and stop logging profiles ([b836d75](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/b836d750d08eefe012f85b0e46b0ce2a2d0699c9))
-* **ci:** drop component name from release-please tags ([2929608](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/2929608ebcf13f631d09a617ef6d6268316192f0))
 * **ci:** drop component name from release-please tags ([b315944](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/b3159442ddc3edd5447de21fffe96f43b40aa132))
 * **config:** validate environment variables at startup ([e242013](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/e242013d0fe869435e89287f8eec63887762b418))
 * **db:** verify the database TLS certificate by default ([05d3eeb](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/05d3eeb2599f399190e8cb6ded83aebccf181e58))
