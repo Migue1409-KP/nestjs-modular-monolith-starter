@@ -4,6 +4,24 @@ Todos los cambios relevantes del proyecto. Formato basado en [Keep a Changelog](
 y versionado según [SemVer](https://semver.org/lang/es/), derivado de los tipos de commit
 ([Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/)).
 
+## [1.1.0](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/compare/v1.0.1...v1.1.0) (2026-11-19)
+
+
+### Features
+
+* **docs:** read OpenAPI version from package.json ([48132e4](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/48132e4a824ae46891c526948bcb87db86246283))
+* **security:** add helmet, rate limiting and shutdown hooks ([019c984](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/019c984c7585f7a0d7e150d91bf0e7f88227003e))
+
+
+### Bug Fixes
+
+* **auth:** remove insecure secret fallbacks ([6528391](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/6528391cfa59b58ddd1a34207dbf9c4470098feb))
+* **auth:** request minimal Google scopes and stop logging profiles ([b836d75](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/b836d750d08eefe012f85b0e46b0ce2a2d0699c9))
+* **ci:** drop component name from release-please tags ([b315944](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/b3159442ddc3edd5447de21fffe96f43b40aa132))
+* **config:** validate environment variables at startup ([e242013](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/e242013d0fe869435e89287f8eec63887762b418))
+* **db:** verify the database TLS certificate by default ([05d3eeb](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/05d3eeb2599f399190e8cb6ded83aebccf181e58))
+* **security:** compare API key in constant time ([6b65568](https://github.com/Migue1409-KP/nestjs-modular-monolith-starter/commit/6b65568a8a2d68315e47a93f83d265e511e123ee))
+
 ## Notas detalladas de 1.1.0
 
 ### Documentación
