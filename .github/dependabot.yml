@@ -8,6 +8,13 @@ updates:
     commit-message:
       prefix: chore
       include: scope
+    ignore:
+      # Majors need a planned migration (see ROADMAP.md): stay on Nest 11.x.
+      - dependency-name: '@nestjs/*'
+        update-types: ['version-update:semver-major']
+      # zod 4 changes the API (required_error, ZodError.errors, ...).
+      - dependency-name: zod
+        update-types: ['version-update:semver-major']
     groups:
       nestjs:
         patterns: ['@nestjs/*']
@@ -23,6 +30,10 @@ updates:
       interval: weekly
     commit-message:
       prefix: chore
+    ignore:
+      # Keep the image on the LTS line declared in `engines` / .nvmrc.
+      - dependency-name: node
+        update-types: ['version-update:semver-major']
 
   - package-ecosystem: github-actions
     directory: /
