@@ -66,7 +66,7 @@
     "better-auth": "^1.7.12",
     "dayjs": "^1.11.20",
     "helmet": "^8.3.0",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^5.5.0",
     "mime-types": "^3.0.2",
     "nest-winston": "^2.0.0",
     "pg": "^8.11.3",
